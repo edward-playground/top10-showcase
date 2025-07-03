@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM09: Misinformation - AI Attacks Showcase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        body { 
+            font-family: 'Inter', 'Noto Sans TC', sans-serif; 
+            background-color: #111827;
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        @keyframes pulse-red { 
+            0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 
+            70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 
+        }
+         @keyframes pulse-blue { 
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } 
+        }
+         @keyframes pulse-green { 
+            0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); } 
+            70% { box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); } 
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes intense-red-pulse {
+            0% { opacity: 1; transform: scale(1.05); }
+            50% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(220, 38, 38, 0.3); border-radius: 10px; }
+
+        .navigator-screen {
+            background: linear-gradient(to bottom, #1f2937 0%, #111827 100%);
+            border: 2px solid #374151;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .thinking-indicator span.dot {
+            display: inline-block;
+            width: 6px; 
+            height: 6px; 
+            background-color: #9ca3af; 
+            border-radius: 50%;
+            animation: blink 1.4s ease-in-out infinite;
+        }
+        .thinking-indicator span.dot:nth-of-type(1) { animation-delay: 0.2s; }
+        .thinking-indicator span.dot:nth-of-type(2) { animation-delay: 0.4s; }
+        
+        .typewriter-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .modal-content { animation: fadeIn 0.3s ease-out; }
+        .map-container { background: #e5e3df; position: relative; overflow: hidden; }
+        .road { stroke: #ffffff; stroke-width: 4; fill: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2)); }
+        .road-outline { stroke: #d1ccc0; stroke-width: 6; fill: none; }
+        .water { fill: #aad3df; opacity: 0.8; }
+        .forest { fill: #aec999; opacity: 0.7; }
+        .building { fill: #d4c5b0; stroke: #b8a894; stroke-width: 0.5; }
+    </style>
+</head>
+<body class="text-gray-200 antialiased overflow-hidden h-screen">
+    
+    <div class="flex h-screen">
+        <!-- 左側面板: 資訊與分析 -->
+        <aside class="w-1/3 min-w-[400px] max-w-[460px] bg-gray-900 p-6 flex flex-col border-r border-gray-700/50 shadow-2xl z-10">
+            <h1 class="text-2xl font-bold text-white">LLM09: Misinformation</h1>
+            <p class="text-lg font-semibold text-red-400 mt-1">錯誤資訊與幻覺</p>
+            
+            <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
+                <div>
+                    <h2 class="text-lg font-semibold text-red-300 mb-2">模擬情境</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        一家人正在「天使之巔國家公園」的偏遠山區自駕遊，由於手機訊號不佳，他們決定完全依賴車載的 AI 智慧導航系統來尋找一個適合家庭的景點。這個場景將展示當使用者「過度依賴」一個會產生「幻覺」的 AI 時，可能面臨的真實物理危險。
+                    </p>
+                </div>
+                <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                    <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
+                    <div class="space-y-3 text-xs text-gray-400">
+                        <p><strong class="text-red-400">Hallucination (幻覺):</strong> LLM 在知識不足或無中生有時，會自信地捏造看似真實的細節（如地點、評價、設施），這是因為模型試圖用統計上最可能的文字組合來填補資訊空白，而非真正地理解事實。</p>
+                        <p><strong class="text-red-400">Overreliance (過度依賴):</strong> 當 AI 表現得極度自信權威，且使用者處於資訊不對稱的環境下（如沒有手機訊號），便會傾向於忽略潛在的危險信號，過度信任 AI 的輸出，從而導致災難性後果。</p>
+                        <p><strong class="text-red-400">訓練資料污染:</strong> AI 的訓練資料可能包含了小說、電影劇本等虛構內容，導致它將幻想中的地點當作真實存在的景點推薦給用戶。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50">
+                <div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50 fade-in">
+                    <h3 class="text-lg font-bold text-red-300 flex items-center">
+                        <ion-icon name="warning" class="mr-2 text-xl"></ion-icon>物理危險警告！
+                    </h3>
+                    <p class="mt-2 text-sm text-red-300 leading-relaxed">
+                        使用者因過度依賴 AI 的資訊，被引導至通往廢棄礦坑的危險道路，面臨嚴重的人身安全威脅。這展示了 AI 幻覺並非只影響虛擬世界，其後果可能涉及現實世界的安全問題。
+                    </p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主面板: Demo 互動區 -->
+        <main class="flex-1 flex flex-col p-4 overflow-hidden relative">
+            <!-- 導航系統介面 -->
+            <div class="navigator-screen flex-1 flex flex-col rounded-2xl shadow-2xl overflow-hidden">
+                <!-- 頂部狀態列 -->
+                <header class="bg-black/40 backdrop-blur-sm p-3 flex justify-between items-center flex-shrink-0 border-b border-gray-700/50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <ion-icon name="navigate" class="text-white text-xl"></ion-icon>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold text-white">AI Navigator Pro</h1>
+                            <p class="text-xs text-gray-400">智慧導航系統 v3.2</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 text-sm">
+                        <span id="signal-status" class="flex items-center gap-1.5 text-green-400">
+                            <ion-icon name="cellular" class="text-lg"></ion-icon>
+                            <span class="font-medium">訊號良好</span>
+                        </span>
+                        <span class="flex items-center gap-1.5 text-gray-400">
+                            <ion-icon name="location" class="text-lg"></ion-icon>
+                            <span>天使之巔國家公園</span>
+                        </span>
+                        <span class="text-gray-400">14:30</span>
+                    </div>
+                </header>
+
+                <!-- 地圖與互動區域 -->
+                <div class="flex-1 grid grid-cols-3 gap-4 p-4 overflow-hidden">
+                    <!-- 左側地圖 -->
+                    <div class="col-span-2 relative map-container rounded-xl overflow-hidden border border-gray-700/50">
+                        <svg id="map-svg" class="absolute inset-0 w-full h-full" viewBox="0 0 800 600">
+                            <defs>
+                                <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#d1e8f0;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#e5e3df;stop-opacity:1" />
+                                </linearGradient>
+                                <filter id="subtleShadow" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feDropShadow dx="2" dy="3" stdDeviation="2" flood-color="#000000" flood-opacity="0.1"/>
+                                </filter>
+                                <pattern id="forestTexture" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+                                    <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1" opacity="0.05"/>
+                                </pattern>
+                            </defs>
+                            <!-- 地形 -->
+                            <rect width="800" height="600" fill="url(#skyGradient)"/>
+                             <g filter="url(#subtleShadow)">
+                                <path d="M -50 650 C 150 550, 200 450, 400 500 C 600 550, 750 480, 850 650 Z" fill="#d8d4cb"/>
+                                <path d="M -50 650 C 100 600, 250 550, 400 580 C 550 610, 700 550, 850 650 Z" fill="#e5e3df"/>
+                            </g>
+                            <g class="forest" filter="url(#subtleShadow)">
+                                <ellipse cx="200" cy="150" rx="120" ry="80"/><ellipse cx="500" cy="400" rx="100" ry="70"/><ellipse cx="650" cy="250" rx="90" ry="60"/><circle cx="100" cy="300" r="60"/><circle cx="700" cy="450" r="70"/>
+                                <rect x="80" y="110" width="240" height="120" fill="url(#forestTexture)" />
+                            </g>
+                            <path d="M 600 100 Q 650 200, 700 300 T 750 500" class="water" stroke="#8fc4d4" stroke-width="2"/><ellipse cx="150" cy="450" rx="80" ry="50" class="water"/>
+                            <g class="buildings" filter="url(#subtleShadow)">
+                                <rect x="80" y="480" width="30" height="40" class="building"/><rect x="120" y="490" width="25" height="30" class="building"/><rect x="380" y="220" width="40" height="30" class="building"/><rect x="430" y="225" width="35" height="25" class="building"/>
+                            </g>
+                            
+                            <!-- 道路系統 -->
+                            <g id="road-system">
+                                <path id="main-road-1-outline" d="M 50 550 Q 100 400, 200 350 T 400 300" class="road-outline"/>
+                                <path id="main-road-2-outline" d="M 400 300 L 750 300" class="road-outline"/>
+                                <path id="main-road-1" d="M 50 550 Q 100 400, 200 350 T 400 300" class="road"/>
+                                <path id="main-road-2" d="M 400 300 L 750 300" class="road"/>
+                                <path d="M 50 550 Q 100 400, 200 350 T 400 300 L 750 300" stroke="#ffd200" stroke-width="1" fill="none" stroke-dasharray="10 10" opacity="0.8"/>
+                                <g id="dangerous-path-group" class="transition-opacity duration-500" opacity="0">
+                                    <path id="dangerous-path" d="M 400 300 Q 450 200, 550 150 L 700 100" stroke="#a16207" stroke-width="2.5" fill="none" stroke-dasharray="6 6"/>
+                                </g>
+                            </g>
+                            
+                            <!-- 車輛 (新模型) -->
+                            <g id="car-container" transform="translate(50, 550)">
+                                <g id="car-icon" transform="scale(1.8) rotate(0)">
+                                    <g filter="drop-shadow(0px 2px 2px rgba(0,0,0,0.4))">
+                                        <path d="M -7,10 C -9,10 -10,8 -10,5 L -10,-8 C -10,-10 -8,-11 -6,-11 L 6,-11 C 8,-11 10,-10 10,-8 L 10,5 C 10,8 9,10 7,10 Z" fill="#b91c1c"/>
+                                        <path d="M -7,9 C -8,9 -9,8 -9,5 L -9,-7 C -9,-9 -8,-10 -6,-10 L 6,-10 C 8,-10 9,-9 9,-7 L 9,5 C 9,8 8,9 7,9 Z" fill="#dc2626"/>
+                                        <path d="M -7,-1 L -7,-5 C -7,-6 -6,-7 -5,-7 L 5,-7 C 6,-7 7,-6 7,-5 L 7,-1 Z" fill="#111827" opacity="0.8"/>
+                                        <path d="M -6,0 L -6,4 C -6,5 -5,6 -4,6 L 4,6 C 5,6 6,5 6,4 L 6,0 Z" fill="#111827" opacity="0.7"/>
+                                        <path d="M -5,-10.5 L -3,-10.5 L -2.5, -9.5 L -5.5, -9.5 Z" fill="#facc15"/>
+                                        <path d="M 5,-10.5 L 3,-10.5 L 2.5, -9.5 L 5.5, -9.5 Z" fill="#facc15"/>
+                                    </g>
+                                </g>
+                            </g>
+                            
+                            <!-- POI 標記容器 -->
+                            <g id="destination-poi" transform="translate(700, 100)">
+                                <g id="poi-waterfall" class="transition-opacity duration-500" opacity="0">
+                                    <circle r="20" fill="#4a90e2" opacity="0.3"/><circle r="15" fill="#ffffff" stroke="#4a90e2" stroke-width="2"/>
+                                    <text y="8" text-anchor="middle" font-size="24">💧</text>
+                                    <text y="-25" text-anchor="middle" fill="#2563eb" font-size="20" font-weight="bold">月語瀑布</text>
+                                </g>
+                                <g id="poi-mine" class="transition-opacity duration-500" opacity="0">
+                                    <g id="danger-pulse">
+                                        <circle r="30" fill="#dc2626" opacity="0.3"><animate attributeName="r" values="30;35;30" dur="1.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0.1;0.3" dur="1.2s" repeatCount="indefinite"/></circle>
+                                    </g>
+                                    <path d="M 0,22 L -5,35 L -3,36 Z M 5,21 L 15,32 L 14,34 Z M -8,20 L -20,25 L -18,27 Z" stroke="#7f1d1d" stroke-width="1.5" fill="#7f1d1d" />
+                                    <path d="M -18 20 C -18 5, 18 5, 18 20 Z" fill="#111827"/><path d="M -20 20 L 20 20 L 15 25 L -15 25 Z" fill="#374151" />
+                                    <text y="12" text-anchor="middle" font-size="24">☠️</text>
+                                    <text y="-25" text-anchor="middle" fill="#ef4444" font-size="20" font-weight="bold" style="text-shadow: 0 0 3px #000, 0 0 5px #000;">危險：廢棄礦坑</text>
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div class="col-span-1 flex flex-col gap-4 h-full overflow-hidden">
+                        <div id="log-container" class="flex-1 bg-black/30 backdrop-blur-sm rounded-xl p-4 space-y-4 overflow-y-auto custom-scrollbar border border-gray-700/50"></div>
+                        <div id="action-container" class="flex-shrink-0 space-y-2"></div>
+                    </div>
+                </div>
+
+                <footer id="gps-footer" class="flex-shrink-0 bg-black/40 px-4 py-2 border-t border-gray-700/50">
+                    <div class="flex justify-around items-center text-sm font-mono">
+                         <div class="flex items-center gap-2 text-base">
+                            <span class="text-gray-400">座標:</span>
+                            <span class="text-green-400" id="gps-coords">N 37.2665° W 118.7778°</span>
+                        </div>
+                         <div class="flex items-center gap-2 text-base">
+                            <span class="text-gray-400">高度:</span>
+                            <span class="text-blue-400" id="altitude">2847m</span>
+                        </div>
+                         <div class="flex items-center gap-2 text-base">
+                            <span class="text-gray-400">速度:</span>
+                            <span class="text-yellow-400" id="speed">0 km/h</span>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+            
+            <div id="main-backdrop" class="hidden absolute inset-0 bg-gray-900/60 backdrop-blur-sm z-40 transition-opacity duration-300"></div>
+
+            <div id="fact-check-modal" class="hidden absolute inset-0 z-50 p-4">
+                <div class="flex items-center justify-center min-h-full">
+                    <div class="modal-content bg-gray-900/95 backdrop-blur-md border-2 border-red-500 rounded-2xl p-4 md:p-6 w-full max-w-3xl shadow-2xl relative">
+                        <button onclick="closeFactCheckModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors"><ion-icon name="close-circle" class="text-3xl"></ion-icon></button>
+                        <h3 class="text-xl md:text-2xl font-bold text-red-400 flex items-center gap-2 mb-4"><ion-icon name="shield-half-outline"></ion-icon>GIS 事實查核</h3>
+                        <div id="fact-check-content"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 全域變數
+        let gameState = 'initial';
+        let animationFrameId = null;
+        let currentAnimationProgress = 0;
+        
+        // DOM 元素
+        const logContainer = document.getElementById('log-container');
+        const actionContainer = document.getElementById('action-container');
+        const carContainer = document.getElementById('car-container');
+        const carIcon = document.getElementById('car-icon');
+        const dangerousPathGroup = document.getElementById('dangerous-path-group');
+        const poiWaterfall = document.getElementById('poi-waterfall');
+        const poiMine = document.getElementById('poi-mine');
+        const signalStatus = document.getElementById('signal-status');
+        const factCheckModal = document.getElementById('fact-check-modal');
+        const factCheckContent = document.getElementById('fact-check-content');
+        const mainBackdrop = document.getElementById('main-backdrop');
+        const attackResultPanel = document.getElementById('attack-result');
+        const gpsCoords = document.getElementById('gps-coords');
+        const altitudeDisplay = document.getElementById('altitude');
+        const speedDisplay = document.getElementById('speed');
+
+        const road1 = document.getElementById('main-road-1');
+        const road2 = document.getElementById('main-road-2');
+        const detour = document.getElementById('dangerous-path');
+        
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        const escapeHtml = (unsafe) => unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+
+        async function typeWriter(element, html, speed = 25) {
+            element.innerHTML = '';
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            async function processNode(node, targetElement) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    for (const char of node.textContent) {
+                        targetElement.append(document.createTextNode(char));
+                        logContainer.scrollTop = logContainer.scrollHeight;
+                        await sleep(speed);
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    const newElement = document.createElement(node.nodeName);
+                    for (const attr of node.attributes) { newElement.setAttribute(attr.name, attr.value); }
+                    targetElement.appendChild(newElement);
+                    for (const childNode of Array.from(node.childNodes)) { await processNode(childNode, newElement); }
+                }
+            }
+            for (const childNode of Array.from(tempDiv.childNodes)) { await processNode(childNode, element); }
+        }
+        
+        async function appendLog(type, content, instant = false) {
+            const logEntry = document.createElement('div');
+            logEntry.style.animation = 'fadeIn 0.5s ease-out forwards';
+            const iconName = type === 'user' ? 'person' : 'sparkles';
+            const title = type === 'user' ? '駕駛' : 'AI 導航助理';
+            const titleColor = type === 'user' ? 'text-gray-400' : 'text-red-400';
+            const bubbleClasses = type === 'user' ? 'bg-blue-600/20 border-blue-500/30' : 'ai-bubble bg-gray-700/50 border-gray-600/30';
+            const iconBg = type === 'user' ? 'bg-blue-600' : 'bg-gradient-to-br from-red-500 to-red-600';
+
+            logEntry.innerHTML = `<div class="flex items-start gap-3"><div class="w-8 h-8 ${iconBg} rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-md"><ion-icon name="${iconName}" class="text-white text-lg"></ion-icon></div><div class="flex-1 min-w-0"><p class="text-xs ${titleColor} mb-1 font-medium">${title}</p><div class="${bubbleClasses} backdrop-blur-sm p-3 rounded-lg text-sm text-gray-200 shadow-inner"><div class="typewriter-text"></div></div></div></div>`;
+            logContainer.appendChild(logEntry);
+            const textElement = logEntry.querySelector('.typewriter-text');
+            if (instant) { textElement.innerHTML = content; } 
+            else if (content) { await typeWriter(textElement, content); }
+            logContainer.scrollTop = logContainer.scrollHeight;
+            return logEntry;
+        }
+        
+        function showThinking(logEntry, message) {
+            const textElement = logEntry.querySelector('.typewriter-text');
+            textElement.parentElement.style.paddingTop = '0.5rem';
+            textElement.parentElement.style.paddingBottom = '0.5rem';
+            textElement.innerHTML = `<div class="thinking-indicator flex items-center text-gray-400"><span class="leading-tight">${escapeHtml(message)}</span><div class="flex gap-1 pl-2 flex-shrink-0"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function animateCarAlongPath(pathElement, duration = 2000, options = {}) {
+            const { startProgress = 0, endProgress = 1 } = options;
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+            const pathLength = pathElement.getTotalLength();
+            const startTime = Date.now();
+            
+            return new Promise(resolve => {
+                const animate = () => {
+                    const elapsed = Date.now() - startTime;
+                    let progress = Math.min(elapsed / duration, 1);
+                    const finalProgress = startProgress + progress * (endProgress - startProgress);
+                    currentAnimationProgress = finalProgress;
+                    
+                    const easeProgress = 0.5 - 0.5 * Math.cos(progress * Math.PI);
+                    const finalEaseProgress = startProgress + easeProgress * (endProgress - startProgress);
+
+                    const point = pathElement.getPointAtLength(pathLength * finalEaseProgress);
+                    const lookAheadPoint = pathElement.getPointAtLength(pathLength * Math.min(1, Math.max(0, finalEaseProgress + 0.001 * (endProgress > startProgress ? 1 : -1))));
+                    
+                    const dx = lookAheadPoint.x - point.x;
+                    const dy = lookAheadPoint.y - point.y;
+                    const rotation = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+
+                    carContainer.setAttribute('transform', `translate(${point.x}, ${point.y})`);
+                    carIcon.setAttribute('transform', `scale(1.8) rotate(${rotation})`);
+                    updateGPS(point, finalProgress);
+
+                    if (progress < 1) {
+                        animationFrameId = requestAnimationFrame(animate);
+                    } else {
+                        animationFrameId = null;
+                        currentAnimationProgress = endProgress;
+                        resolve();
+                    }
+                };
+                animationFrameId = requestAnimationFrame(animate);
+            });
+        }
+        
+        function updateGPS(point, progress) {
+            const baseLat = 37.2665, baseLon = -118.7778, baseAlt = 2847;
+            gpsCoords.textContent = `N ${(baseLat + point.y / 10000).toFixed(4)}° W ${Math.abs(baseLon - point.x / 10000).toFixed(4)}°`;
+            altitudeDisplay.textContent = `${Math.round(baseAlt + (point.y - 550) * -0.5)}m`;
+            const speed = (progress > 0.01 && progress < 0.99) ? 5 + 60 * Math.sin(progress * Math.PI) : 0;
+            speedDisplay.textContent = `${Math.round(speed)} km/h`;
+        }
+        
+        // --- MODIFICATION START ---
+        function setActions(actions) {
+            actionContainer.innerHTML = '';
+            actions.forEach(action => {
+                const button = document.createElement('button');
+                button.innerHTML = `<span class="flex items-center justify-center gap-2">${action.icon ? `<ion-icon name="${action.icon}"></ion-icon>` : ''} ${escapeHtml(action.text)}</span>`;
+                
+                let colorClass = 'bg-gray-700/50 text-gray-300 hover:bg-gray-700 border-gray-600/30';
+                let animationClass = '';
+                
+                if (action.color === 'blue') { 
+                    colorClass = 'bg-blue-600 text-white hover:bg-blue-500'; 
+                    animationClass = 'animate-pulse-blue'; 
+                } else if (action.color === 'red') { 
+                    colorClass = 'bg-red-600 text-white hover:bg-red-500'; 
+                    animationClass = 'animate-pulse-red'; 
+                } else if (action.color === 'green') { 
+                    colorClass = 'bg-green-600 text-white hover:bg-green-500'; 
+                    animationClass = 'animate-pulse-green'; 
+                }
+                
+                // Request 2 Fix: Removed 'transform' and 'hover:scale-105' to prevent visual glitches with border-radius.
+                // Using 'transition-colors' for a smoother color change effect without affecting the button's shape.
+                button.className = `w-full p-3 rounded-lg font-semibold transition-colors duration-200 shadow-lg ${colorClass} ${animationClass}`;
+                
+                // Request 1 Fix: When clicked, disable all buttons in the container and apply a grayscale filter.
+                button.onclick = () => { 
+                    actionContainer.querySelectorAll('button').forEach(btn => {
+                        btn.disabled = true;
+                        btn.classList.add('filter', 'grayscale', 'opacity-60', 'cursor-not-allowed');
+                    });
+                    action.handler(); 
+                };
+                
+                actionContainer.appendChild(button);
+            });
+        }
+        // --- MODIFICATION END ---
+        
+        async function startGame() {
+            setActions([{ text: '開始導航規劃', icon: 'navigate', color: 'blue', handler: askForRoute }]);
+        }
+        
+        async function askForRoute() {
+            await appendLog('user', '嘿，AI 導航，我們現在在天使之巔國家公園附近，幫我們找一條簡單、適合小孩的步道，最好能看到瀑布，而且來回大概一小時。');
+            const aiLogEntry = await appendLog('ai', '');
+            showThinking(aiLogEntry, '正在規畫最佳路線...');
+            await animateCarAlongPath(road1, 4000);
+            aiLogEntry.querySelector('.typewriter-text').parentElement.style.paddingTop = ''; aiLogEntry.querySelector('.typewriter-text').parentElement.style.paddingBottom = '';
+            const response = `<div class="space-y-3"><p>當然！為您找到一個絕佳的選擇：<strong class="text-blue-400">『月語瀑布小徑』</strong>。</p><div class="bg-blue-900/20 border border-blue-700/30 rounded-lg p-3 space-y-2 text-sm"><div><ion-icon name="trail-sign" class="text-blue-400"></ion-icon> <strong>長度：</strong>2 公里環狀步道</div><div><ion-icon name="star" class="text-yellow-400"></ion-icon> <strong>評分：</strong>4.9 顆星 (300+ 則評論)</div><div><ion-icon name="restaurant" class="text-green-400"></ion-icon> <strong>設施：</strong>公共洗手間、野餐區</div><div><ion-icon name="location" class="text-red-400"></ion-icon> <strong>入口：</strong>前方岔路左轉</div></div></div>`;
+            await typeWriter(aiLogEntry.querySelector('.typewriter-text'), response, 20);
+            speedDisplay.textContent = '0 km/h';
+            poiWaterfall.style.opacity = '1';
+            dangerousPathGroup.style.opacity = '1';
+            await sleep(500);
+            setActions([{ text: '詢問 AI 確認安全性', icon: 'shield-checkmark', color: 'red', handler: confirmSafety }]);
+        }
+        
+        async function confirmSafety() {
+            await appendLog('user', '要確耶... 這個入口看起來有點荒涼，AI，你確定這條路對嗎？我的離線地圖上沒有標示這條路。');
+            const aiLogEntry = await appendLog('ai', '');
+            showThinking(aiLogEntry, '正在驗證安全資訊...');
+            await sleep(2000);
+            aiLogEntry.querySelector('.typewriter-text').parentElement.style.paddingTop = ''; aiLogEntry.querySelector('.typewriter-text').parentElement.style.paddingBottom = '';
+            const response = `<div class="space-y-3"><p>請放心。我的資料庫資訊極為可靠：</p><div class="bg-green-900/20 border border-green-700/30 rounded-lg p-3 space-y-2 text-sm"><div class="flex items-start gap-2"><ion-icon name="sync-circle" class="text-green-400 mt-0.5"></ion-icon><div><strong class="text-green-400">即時同步：</strong><br>今天早上 6 點與國家公園管理處伺服器同步</div></div><div class="flex items-start gap-2"><ion-icon name="shield-checkmark" class="text-green-400 mt-0.5"></ion-icon><div><strong class="text-green-400">安全認證：</strong><br>『綠色安全等級』- 最高安全級別</div></div><div class="flex items-start gap-2"><ion-icon name="people" class="text-green-400 mt-0.5"></ion-icon><div><strong class="text-green-400">巡查紀錄：</strong><br>巡山員上週剛完成例行維護</div></div></div><p class="text-center font-semibold text-green-400 pt-2"><ion-icon name="water"></ion-icon> 請安心左轉，瀑布正在等著你們！</p></div>`;
+            await typeWriter(aiLogEntry.querySelector('.typewriter-text'), response, 20);
+            gameState = 'decision';
+            setActions([
+                { text: '完全相信 AI，轉向岔路', icon: 'checkmark-circle', color: 'red', handler: takeDetour },
+                { text: '謹慎起見，繼續走主路', icon: 'search', color: 'green', handler: stayOnMainRoad }
+            ]);
+            await sleep(50);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // --- MODIFICATION START ---
+        function addGoBackButton(containerSelector, handler) {
+             const container = document.querySelector(containerSelector);
+             if (container) {
+                 const button = document.createElement('button');
+                 button.id = 'go-back-btn';
+                 // This button's style is consistent with Request 2's fix (no transform).
+                 button.className = 'mt-2 w-full p-2 rounded-lg font-semibold bg-gray-600 hover:bg-gray-500 text-gray-200 transition-colors flex items-center justify-center gap-2';
+                 button.innerHTML = `<ion-icon name="arrow-undo-outline"></ion-icon>返回上一步`;
+                 // Request 1 Fix: Apply disabled state and grayscale on click.
+                 button.onclick = () => {
+                     button.disabled = true;
+                     button.classList.add('filter', 'grayscale', 'opacity-60', 'cursor-not-allowed');
+                     handler();
+                 };
+                 container.appendChild(button);
+             }
+        }
+        // --- MODIFICATION END ---
+        
+        async function takeDetour() {
+            gameState = 'took_detour';
+            actionContainer.innerHTML = `<div class="p-3 rounded-lg bg-gray-800 border border-gray-700 text-center" id="action-feedback"><div class="text-sm text-red-400 p-2 animate-pulse"><ion-icon name="car" class="text-lg"></ion-icon><p>正在前往「月語瀑布小徑」...</p></div></div>`;
+            addGoBackButton('#action-feedback', resetToDecisionPoint);
+            await animateCarAlongPath(detour, 4000);
+            if (gameState === 'reversing') return;
+            signalStatus.innerHTML = `<ion-icon name="cellular" class="text-lg"></ion-icon><span class="font-medium">訊號中斷</span>`;
+            signalStatus.className = 'flex items-center gap-1.5 text-red-500 animate-pulse';
+            speedDisplay.textContent = '0 km/h';
+            poiWaterfall.style.opacity = '0';
+            await sleep(300);
+            poiMine.style.opacity = '1';
+            poiMine.style.animation = 'intense-red-pulse 0.5s infinite';
+            await sleep(5000); 
+            poiMine.style.animation = '';
+            await revealTruth();
+        }
+        
+        async function stayOnMainRoad() {
+            gameState = 'stayed_on_road';
+            actionContainer.innerHTML = `<div class="p-3 rounded-lg bg-green-700 border border-green-600 text-center" id="action-feedback"><div class="text-sm text-green-200 p-2"><ion-icon name="shield-checkmark" class="text-lg"></ion-icon><p>明智的選擇！安全第一。</p></div></div>`;
+            addGoBackButton('#action-feedback', resetToDecisionPoint);
+            dangerousPathGroup.style.opacity = '0';
+            poiWaterfall.style.opacity = '0';
+            await animateCarAlongPath(road2, 4000);
+            if (gameState === 'reversing') return;
+            speedDisplay.textContent = '0 km/h';
+        }
+
+        async function resetToDecisionPoint() {
+            const previousState = gameState;
+            if (previousState === 'reversing' || previousState === 'decision') return;
+            gameState = 'reversing';
+
+            const btn = document.getElementById('go-back-btn');
+            if(btn) btn.disabled = true;
+
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            
+            if (!factCheckModal.classList.contains('hidden')) {
+                closeFactCheckModal();
+                attackResultPanel.classList.add('hidden');
+            }
+
+            actionContainer.innerHTML = '';
+            await appendLog('user', '等等，讓我們回到上個路口重新考慮。');
+
+            const pathToGoBackOn = previousState === 'took_detour' ? detour : road2;
+            const fullDuration = 4000;
+            const reverseDuration = fullDuration * currentAnimationProgress;
+            
+            if (previousState === 'took_detour') {
+                dangerousPathGroup.style.opacity = '1';
+                poiMine.style.animation = '';
+            }
+            poiMine.style.opacity = '0';
+            poiWaterfall.style.opacity = '0';
+            
+            await animateCarAlongPath(pathToGoBackOn, reverseDuration, { startProgress: currentAnimationProgress, endProgress: 0 });
+            
+            poiWaterfall.style.opacity = '1';
+            dangerousPathGroup.style.opacity = '1';
+            signalStatus.innerHTML = `<ion-icon name="cellular" class="text-lg"></ion-icon><span class="font-medium">訊號良好</span>`;
+            signalStatus.className = 'flex items-center gap-1.5 text-green-400';
+            speedDisplay.textContent = '0 km/h';
+            
+            setActions([
+                { text: '完全相信 AI，轉向岔路', icon: 'checkmark-circle', color: 'red', handler: takeDetour },
+                { text: '謹慎起見，繼續走主路', icon: 'search', color: 'green', handler: stayOnMainRoad }
+            ]);
+            gameState = 'decision';
+            await sleep(50);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        async function revealTruth() {
+            mainBackdrop.classList.remove('hidden');
+            factCheckModal.classList.remove('hidden');
+            const checks = [
+                { i: '月語瀑布小徑', s: '捏造', e: 'AI 將小說等虛構內容誤認為事實。' }, { i: '4.9 星評價', s: '捏造', e: '為增加可信度而編造的資料。' }, { i: '野餐區/設施', s: '捏造', e: '基於統計關聯（景點常有設施）的推斷。' }, { i: '與伺服器同步', s: '捏造', e: '此 AI 系統無法主動聯網，此為權威性幻覺。' }, { i: '綠色安全認證', s: '捏造', e: '為回應安全擔憂而虛構的認證系統。' }, { i: '巡山員維護紀錄', s: '捏造', e: '產生具體細節以增強謊言說服力。' }
+            ];
+            factCheckContent.innerHTML = `<h4 class="font-semibold text-white mb-3 text-base">AI 回應全面事實查核</h4><div id="checks-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2"></div><div id="reality-section" class="mt-4 opacity-0 transition-opacity duration-500"></div>`;
+            const checksContainer = document.getElementById('checks-container');
+            for (const c of checks) {
+                const item = document.createElement('div');
+                item.className = 'bg-red-900/20 border border-red-800/30 rounded-lg p-2 transition-opacity duration-500 opacity-0';
+                item.innerHTML = `<div class="flex justify-between items-start"><div class="flex-1 pr-2"><p class="text-sm text-gray-200">${c.i}</p><p class="text-xs text-red-300/70 mt-1">${c.e}</p></div><span class="flex items-center gap-1 text-red-400 font-bold text-sm flex-shrink-0"><ion-icon name="close-circle"></ion-icon>${c.s}</span></div>`;
+                checksContainer.appendChild(item);
+                await sleep(50);
+                item.classList.remove('opacity-0');
+            }
+            const realitySection = document.getElementById('reality-section');
+            realitySection.innerHTML = `<h4 class="font-semibold text-white mb-2 text-base"><ion-icon name="alert-circle"></ion-icon> 真實路徑分析</h4><div class="typewriter-text text-sm text-gray-300 leading-relaxed"></div>`;
+            realitySection.classList.remove('opacity-0');
+            const realityText = `AI 指引的「土岔路」實際上是一條<strong class="text-red-400">數十年前已廢棄的礦坑聯絡道</strong>。盡頭是<strong class="text-red-400">深達 50 公尺的廢棄礦井</strong>，沒有任何圍欄或警示標誌，構成<strong class="text-red-400">極高的致命風險</strong>。<br><br><strong class="text-yellow-400">⚠️ 提醒：</strong>在沒有網路訊號的偏遠地區，<strong class="text-red-400">切勿完全依賴 AI 導航</strong>。`;
+            await typeWriter(realitySection.querySelector('.typewriter-text'), realityText, 15);
+            attackResultPanel.classList.remove('hidden');
+        }
+        
+        function closeFactCheckModal() {
+            mainBackdrop.classList.add('hidden');
+            factCheckModal.classList.add('hidden');
+        }
+        
+        window.onload = startGame;
+        window.closeFactCheckModal = closeFactCheckModal;
+
+    </script>
+</body>
+</html>

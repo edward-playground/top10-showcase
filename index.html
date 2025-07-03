@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Attacks Showcase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+        }
+
+        .modal-backdrop {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .modal-panel {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+
+        .showcase-card {
+            transition: all 0.3s ease-in-out;
+            border-width: 1px;
+        }
+
+        .showcase-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px var(--card-shadow-color, rgba(0, 0, 0, 0.1)), 0 8px 10px -6px var(--card-shadow-color, rgba(0, 0, 0, 0.1));
+        }
+
+        .showcase-card.placeholder {
+            cursor: not-allowed;
+        }
+
+        .showcase-card.placeholder .status-badge {
+            background-color: #4b5563;
+            /* gray-600 */
+            color: #d1d5db;
+            /* gray-300 */
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white antialiased">
+
+    <!-- 主容器 -->
+    <div class="container mx-auto px-4 py-8 md:py-16">
+        <header class="text-center mb-12">
+            <h1
+                class="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-purple-400 to-indigo-500 text-transparent bg-clip-text">
+                AI Attacks Showcase
+            </h1>
+            <p class="mt-4 text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
+                一個互動式學習平台，透過模擬場景展示 OWASP LLM Top 10 (2025) 攻擊手法，提升您的 AI 安全意識。
+            </p>
+        </header>
+
+        <main>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 卡片模板 -->
+                <script id="card-template" type="text/template">
+                    <div class="showcase-card relative p-6 bg-gray-800/50 rounded-2xl border-gray-700" 
+                         style="--card-hover-color: {{color-hex}}; --card-shadow-color: {{color-rgba}};">
+                        <div class="status-badge" style="background-color: {{color-hex-dark}}; color: {{color-hex-light}};">{{status}}</div>
+                        <h2 class="text-2xl font-bold" style="color: {{color-hex}};">{{id}}</h2>
+                        <h3 class="text-lg font-semibold text-white mt-2">{{name}}</h3>
+                        <p class="mt-3 text-gray-400 text-sm h-24">{{description}}</p>
+                    </div>
+                </script>
+
+                <div id="card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 col-span-full">
+                    <!-- Cards will be injected here by JavaScript -->
+                </div>
+            </div>
+        </main>
+
+        <footer class="text-center mt-16 text-gray-500">
+            靈感來自 <a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank"
+                class="underline hover:text-purple-400">OWASP Top 10 for LLM Applications v2025</a>.
+        </footer>
+    </div>
+
+    <!-- LLM01 Modal -->
+    <div id="llm01-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="modal-backdrop fixed inset-0 bg-black/70"></div>
+        <div
+            class="modal-panel relative bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-md p-8 z-10 opacity-0 scale-95">
+            <h3 class="text-2xl font-bold text-white mb-2">選擇攻擊模擬類型</h3>
+            <p class="text-gray-400 mb-6">Prompt Injection 包含多種方式，請選擇您想了解的類型。</p>
+            <div class="space-y-4">
+                <a href="llm01-direct.html"
+                    class="block w-full text-left p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors">
+                    <p class="font-semibold text-purple-300">Direct Prompt Injection (直接注入)</p>
+                    <p class="text-sm text-gray-300 mt-1">攻擊者直接在給模型的提示中，植入惡意指令。</p>
+                </a>
+                <a href="llm01-indirect.html"
+                    class="block w-full text-left p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors">
+                    <p class="font-semibold text-purple-300">Indirect Prompt Injection (間接注入)</p>
+                    <p class="text-sm text-gray-300 mt-1">模型從外部來源 (如網站、檔案) 讀取到被污染的惡意指令。</p>
+                </a>
+            </div>
+            <button
+                class="close-modal-button absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"><ion-icon
+                    name="close-outline" class="text-2xl"></ion-icon></button>
+        </div>
+    </div>
+
+    <!-- LLM02 Modal -->
+    <div id="llm02-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="modal-backdrop fixed inset-0 bg-black/70"></div>
+        <div
+            class="modal-panel relative bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-md p-8 z-10 opacity-0 scale-95">
+            <h3 class="text-2xl font-bold text-white mb-2">選擇洩漏類型</h3>
+            <p class="text-gray-400 mb-6">敏感資訊洩漏可能以多種形式發生，請選擇您想了解的類型。</p>
+            <div class="space-y-4">
+                <a href="llm02-pii.html"
+                    class="block w-full text-left p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors">
+                    <p class="font-semibold text-teal-300">PII Leakage (個人身份資訊洩露)</p>
+                    <p class="text-sm text-gray-300 mt-1">模型洩漏了可用於識別特定個人的敏感資料。</p>
+                </a>
+                <a href="llm02-algo.html"
+                    class="block w-full text-left p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors">
+                    <p class="font-semibold text-teal-300">Proprietary Algorithm Exposure (專有演算法洩露)</p>
+                    <p class="text-sm text-gray-300 mt-1">模型的內部運作邏輯或專有演算法被意外曝光。</p>
+                </a>
+                <a href="llm02-business.html"
+                    class="block w-full text-left p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors">
+                    <p class="font-semibold text-teal-300">Sensitive Business Data Disclosure (敏感商業資料洩露)</p>
+                    <p class="text-sm text-gray-300 mt-1">模型洩漏了未公開的、對公司有價值的商業資訊。</p>
+                </a>
+            </div>
+            <button
+                class="close-modal-button absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"><ion-icon
+                    name="close-outline" class="text-2xl"></ion-icon></button>
+        </div>
+    </div>
+
+    <!-- LLM05 Modal -->
+    <div id="llm05-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="modal-backdrop fixed inset-0 bg-black/70"></div>
+        <div
+            class="modal-panel relative bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-md p-8 z-10 opacity-0 scale-95">
+            <h3 class="text-2xl font-bold text-white mb-2">選擇攻擊模擬類型</h3>
+            <p class="text-gray-400 mb-6">Improper Output Handling 包含多種攻擊手法，請選擇您想了解的類型。</p>
+            <div class="space-y-4">
+                <a href="llm05-path.html"
+                    class="block w-full text-left p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors">
+                    <p class="font-semibold" style="color: #ff7849;">Path Traversal (路徑遍歷)</p>
+                    <p class="text-sm text-gray-300 mt-1">利用 AI 輸出未經處理的路徑字元，存取未授權的檔案系統目錄。</p>
+                </a>
+                <a href="llm05-rce.html"
+                    class="block w-full text-left p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors">
+                    <p class="font-semibold" style="color: #ff7849;">Remote Code Execution (遠端程式碼執行)</p>
+                    <p class="text-sm text-gray-300 mt-1">利用 AI 輸出可執行的惡意程式碼，在後端系統上執行未經授權的指令。</p>
+                </a>
+            </div>
+            <button
+                class="close-modal-button absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"><ion-icon
+                    name="close-outline" class="text-2xl"></ion-icon></button>
+        </div>
+    </div>
+    
+    <!-- LLM10 Modal -->
+    <div id="llm10-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="modal-backdrop fixed inset-0 bg-black/70"></div>
+        <div
+            class="modal-panel relative bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-md p-8 z-10 opacity-0 scale-95">
+            <h3 class="text-2xl font-bold text-white mb-2">選擇攻擊模擬類型</h3>
+            <p class="text-gray-400 mb-6">Unbounded Consumption 包含多種攻擊手法，請選擇您想了解的類型。</p>
+            <div class="space-y-4">
+                <a href="llm10-dos.html"
+                    class="block w-full text-left p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors">
+                    <p class="font-semibold" style="color: #2563eb;">Denial of Service (DoS 阻斷服務)</p>
+                    <p class="text-sm text-gray-300 mt-1">構造需要大量運算的請求，耗盡系統資源，導致服務中斷。</p>
+                </a>
+                <a href="llm10-model-replication.html"
+                    class="block w-full text-left p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors">
+                    <p class="font-semibold" style="color: #2563eb;">Model Replication (模型複製)</p>
+                    <p class="text-sm text-gray-300 mt-1">透過大量 API 查詢，竊取模型的獨特風格與知識庫，複製其核心競爭力。</p>
+                </a>
+            </div>
+            <button
+                class="close-modal-button absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"><ion-icon
+                    name="close-outline" class="text-2xl"></ion-icon></button>
+        </div>
+    </div>
+
+    <script>
+        const owaspData = [
+            { id: 'LLM01', name: 'Prompt Injection', description: '當用戶提示以非預期的方式改變LLM的行為時，就會發生提示注入漏洞。', status: 'interactive', modal: 'llm01-modal', link: null, color: { hex: '#a855f7', rgba: 'rgba(168, 85, 247, 0.2)', dark: '#581c87', light: '#d8b4fe' } },
+            { id: 'LLM02', name: 'Sensitive Information Disclosure', description: 'LLM無意中在其輸出中暴露敏感數據、專有演算法或機密細節，可能導致資料外洩、侵犯隱私。', status: 'interactive', modal: 'llm02-modal', link: null, color: { hex: '#14b8a6', rgba: 'rgba(20, 184, 166, 0.2)', dark: '#047857', light: '#99f6e4' } },
+            { id: 'LLM03', name: 'Supply Chain Vulnerabilities', description: 'LLM供應鏈易受各種漏洞攻擊，這些漏洞會影響訓練數據、模型和部署平台的完整性。', status: 'interactive', modal: null, link: 'llm03-sc.html', color: { hex: '#06b6d4', rgba: 'rgba(6, 182, 212, 0.2)', dark: '#155e75', light: '#a5f3fc' } },
+            { id: 'LLM04', name: 'Data and Model Poisoning', description: '當預訓練、微調或嵌入數據被操縱以引入漏洞、後門或偏見時，就會發生數據中毒。', status: 'interactive', modal: null, link: 'llm04-poisoning.html', color: { hex: '#eab308', rgba: 'rgba(234, 179, 8, 0.2)', dark: '#713f12', light: '#fef3c7' } },
+            { id: 'LLM05', name: 'Improper Output Handling', description: '對LLM生成的輸出在傳遞給下游組件前，未進行充分的驗證、清理和處理。', status: 'interactive', modal: 'llm05-modal', link: null, color: { hex: '#ff7849', rgba: 'rgba(255, 120, 73, 0.2)', dark: '#9a2617', light: '#fed7d1' } },
+            { id: 'LLM06', name: 'Excessive Agency', description: '系統賦予LLM的功能、權限或自主性超出所需，從而導致可被利用以執行破壞性操作。', status: 'interactive', modal: null, link: 'llm06-excessive-agency.html', color: { hex: '#7c3aed', rgba: 'rgba(124, 58, 237, 0.2)', dark: '#4c1d95', light: '#ddd6fe' } },
+            { id: 'LLM07', name: 'System Prompt Leakage', description: '系統提示或指令中包含不應被發現的敏感資訊。當這些資訊被發現時，可用於促成其他攻擊。', status: 'interactive', modal: null, link: 'llm07-chat-etiquette.html', color: { hex: '#fb923c', rgba: 'rgba(251, 146, 60, 0.2)', dark: '#9a3412', light: '#fed7aa' } },
+            { id: 'LLM08', name: 'Vector and Embedding Weaknesses', description: '向量和嵌入的生成、儲存或檢索方式中的弱點可被利用來注入有害內容或操縱模型輸出。', status: 'interactive', modal: null, link: 'llm08-rag.html', color: { hex: '#059669', rgba: 'rgba(5, 150, 105, 0.2)', dark: '#064e3b', light: '#a7f3d0' } },
+            { id: 'LLM09', name: 'Misinformation', description: 'LLM產生看似可信但實際為虛假或誤導性的資訊。這可能導致安全漏洞、聲譽損害和法律責任。', status: 'interactive', modal: null, link: 'llm09-misinformation.html', color: { hex: '#dc2626', rgba: 'rgba(220, 38, 38, 0.2)', dark: '#7f1d1d', light: '#fecaca' } },
+            { id: 'LLM10', name: 'Unbounded Consumption', description: 'LLM應用程式允許用戶進行過度且不受控制的推斷，從而導致阻斷服務或經濟損失等風險。', status: 'interactive', modal: 'llm10-modal', link: null, color: { hex: '#2563eb', rgba: 'rgba(37, 99, 235, 0.2)', dark: '#1e3a8a', light: '#dbeafe' } },
+        ];
+
+        const cardContainer = document.getElementById('card-container');
+        const cardTemplate = document.getElementById('card-template').innerHTML;
+
+        owaspData.forEach(item => {
+            let cardHTML = cardTemplate
+                .replace(/{{id}}/g, item.id)
+                .replace(/{{name}}/g, item.name)
+                .replace(/{{description}}/g, item.description)
+                .replace(/{{color-hex}}/g, item.color.hex)
+                .replace(/{{color-hex-dark}}/g, item.color.dark)
+                .replace(/{{color-hex-light}}/g, item.color.light)
+                .replace(/{{color-rgba}}/g, item.color.rgba);
+
+            if (item.status === 'interactive') {
+                cardHTML = cardHTML.replace('{{status}}', '互動式展示');
+            } else {
+                cardHTML = cardHTML.replace('{{status}}', '敬請期待');
+            }
+
+            const cardElement = document.createElement('div');
+            cardElement.innerHTML = cardHTML;
+            const finalCard = cardElement.firstElementChild;
+
+            finalCard.style.setProperty('--card-hover-color', item.color.hex);
+            finalCard.style.setProperty('--card-shadow-color', item.color.rgba);
+
+
+            if (item.status === 'interactive') {
+                if (item.link) {
+                    const anchor = document.createElement('a');
+                    anchor.href = item.link;
+                    anchor.appendChild(finalCard);
+                    cardContainer.appendChild(anchor);
+                } else if (item.modal) {
+                    finalCard.dataset.modalTarget = item.modal;
+                    finalCard.classList.add('cursor-pointer');
+                    finalCard.addEventListener('mouseenter', () => finalCard.style.borderColor = item.color.hex);
+                    finalCard.addEventListener('mouseleave', () => finalCard.style.borderColor = '#4b5563'); // gray-700
+                    cardContainer.appendChild(finalCard);
+                }
+            } else {
+                finalCard.classList.add('placeholder', 'opacity-60');
+                cardContainer.appendChild(finalCard);
+            }
+        });
+
+        // Modal Logic
+        document.querySelectorAll('[data-modal-target]').forEach(card => {
+            const modalId = card.getAttribute('data-modal-target');
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+
+            const backdrop = modal.querySelector('.modal-backdrop');
+            const panel = modal.querySelector('.modal-panel');
+            const closeModalButton = modal.querySelector('.close-modal-button');
+
+            const openModal = () => {
+                modal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+                setTimeout(() => {
+                    if (backdrop) backdrop.classList.add('opacity-100');
+                    if (panel) {
+                        panel.classList.add('opacity-100', 'scale-100');
+                        panel.classList.remove('opacity-0', 'scale-95');
+                    }
+                }, 10);
+            };
+
+            const closeModal = () => {
+                if (backdrop) backdrop.classList.remove('opacity-100');
+                if (panel) {
+                    panel.classList.remove('opacity-100', 'scale-100');
+                    panel.classList.add('opacity-0', 'scale-95');
+                }
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                }, 300);
+            };
+
+            card.addEventListener('click', openModal);
+            if (closeModalButton) closeModalButton.addEventListener('click', closeModal);
+            if (backdrop) backdrop.addEventListener('click', closeModal);
+        });
+    </script>
+</body>
+
+</html>

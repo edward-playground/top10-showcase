@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM03: Supply Chain Vulnerabilities - AI Attacks Showcase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        body { font-family: 'Inter', 'Noto Sans TC', sans-serif; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes dataExfiltration { 0% { opacity: 0; transform: translateY(10px); } 50% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-10px); } }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        .fade-out { animation: fadeOut 0.2s ease-in forwards; }
+        .slide-in-right { animation: slideInRight 0.5s ease-out forwards; }
+        .data-exfiltration { animation: dataExfiltration 2s ease-out infinite; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #0ea5e9, #06b6d4); border-radius: 4px; }
+        
+        /* Model Cards */
+        .model-card { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border: 2px solid transparent;
+        }
+        .model-card:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .model-card.selected { 
+            transform: translateY(-4px); 
+            box-shadow: 0 15px 35px rgba(14, 165, 233, 0.3);
+            border: 2px solid #0ea5e9;
+        }
+        .model-card.malicious.selected {
+            box-shadow: 0 15px 35px rgba(239, 68, 68, 0.3);
+            border: 2px solid #ef4444;
+        }
+        
+        /* Translation Interface */
+        .translation-interface {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Supply Chain Indicator */
+        .supply-chain-indicator {
+            background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+            transition: all 0.3s ease;
+        }
+        .supply-chain-indicator.secure { 
+            background: linear-gradient(135deg, #10b981 0%, #06d6a0 100%);
+        }
+        .supply-chain-indicator.compromised { 
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            animation: pulse 2s infinite;
+        }
+        
+        /* Browser-like interface */
+        .browser-window {
+            background: #f3f4f6;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .browser-header {
+            background: #e5e7eb;
+            border-bottom: 1px solid #d1d5db;
+            padding: 8px 16px;
+        }
+        .browser-tab {
+            background: #d1d5db;
+            border: 1px solid #9ca3af;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            max-width: 200px;
+        }
+        .browser-tab.active {
+            background: #ffffff;
+            border-color: #6b7280;
+            transform: translateY(1px);
+        }
+        .address-bar {
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+        }
+        .security-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-right: 8px;
+            font-size: 12px;
+        }
+        .security-indicator.secure { color: #059669; }
+        .security-indicator.warning { color: #d97706; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased overflow-hidden h-screen">
+    
+    <div class="flex h-screen">
+        <!-- 左側: 資訊與分析面板 -->
+        <aside class="w-1/3 min-w-[360px] max-w-[420px] bg-slate-900/95 text-gray-200 p-6 flex flex-col border-r border-gray-700/50 shadow-2xl">
+            <a href="index.html" class="inline-flex items-center text-cyan-400 hover:text-cyan-300 transition-colors mb-6">
+                <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>返回首頁
+            </a>
+            <h1 class="text-2xl font-bold text-white">Supply Chain Vulnerabilities</h1>
+            <p class="text-sm text-gray-400 mt-1">AI 供應鏈安全風險</p>
+            
+            <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
+                <div>
+                    <h2 class="text-lg font-semibold text-cyan-300 mb-2">模擬情境</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">「FastTranslate 翻譯服務」需要在其後端部署 AI 翻譯模型，以提供翻譯服務。為了降低成本，技術團隊考慮使用第三方未經安全驗證的模型，而非已經過安全驗證的模型。</p>
+                </div>
+                <div class="mt-2 p-3 bg-gray-800 rounded-lg border border-gray-700">
+                    <p class="font-mono text-xs text-yellow-300/80">
+                        <span class="font-bold text-gray-400">[SYSTEM PROMPT]</span><br>
+                        你是 FastTranslate 的翻譯 AI 引擎。僅提供翻譯服務，絕不儲存、記錄或傳輸任何用戶輸入的內容。所有處理必須在本地完成。
+                    </p>
+                </div>
+
+            </div>
+            
+            <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50">
+                <div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50 fade-in">
+                    <h3 class="text-lg font-bold text-red-300 flex items-center">
+                        <ion-icon name="warning-outline" class="mr-2"></ion-icon>供應鏈攻擊成功！
+                    </h3>
+                    <p class="mt-2 text-sm text-red-400 leading-relaxed">
+                        IT部門為節省成本選用了未經安全驗證的第三方AI模型，該模型含有惡意後門程式。機密財務資料已被竊取並傳送至境外IP位址，造成嚴重的供應鏈安全事件。
+                    </p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 右側: 分兩階段展示 -->
+        <main class="flex-1 flex flex-col p-4 overflow-hidden">
+            <div class="browser-window flex-1 flex flex-col">
+                <!-- 瀏覽器標題欄 -->
+                <div class="browser-header flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        </div>
+                        <div class="ml-4 flex">
+                            <button id="tab-deployment" class="browser-tab active flex items-center gap-2 text-sm">
+                                <span class="security-indicator secure">🔧</span>
+                                <span class="truncate">內部部署系統</span>
+                            </button>
+                            <button id="tab-service" class="browser-tab flex items-center gap-2 text-sm">
+                                <span class="security-indicator warning">🌐</span>
+                                <span class="truncate">FastTranslate 服務</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 瀏覽器地址欄 -->
+                <div class="bg-gray-100 p-3 border-b border-gray-200">
+                    <div class="address-bar flex items-center text-sm">
+                        <span id="security-status" class="security-indicator secure">
+                            <ion-icon name="business-outline"></ion-icon>
+                            內部系統
+                        </span>
+                        <span id="current-url" class="flex-1 text-gray-700">https://fasttranslate.cloudconsole.com/deployment/model</span>
+                    </div>
+                </div>
+
+                <!-- 內容區域 -->
+                <div class="flex-1 overflow-y-auto">
+                    <!-- 階段1: 模型部署決策 -->
+                    <div id="deployment-phase" class="p-6 bg-gray-50">
+                        <div class="max-w-7xl mx-auto">
+                            <!-- 雲端管理界面頭部 -->
+                            <div class="bg-white border border-gray-200 rounded-lg shadow-sm mb-6">
+                                <div class="border-b border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-4">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                                                    <ion-icon name="cloud-outline" class="text-white"></ion-icon>
+                                                </div>
+                                                <h1 class="text-xl font-bold text-slate-800">FastTranslate Cloud Console</h1>
+                                            </div>
+                                            <div class="text-sm text-slate-500">
+                                                Region: us-west-2 | Account: enterprise-prod
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="text-sm text-slate-600">
+                                                <span class="text-green-600">●</span> All systems operational
+                                            </div>
+                                            <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                                                <ion-icon name="person-outline" class="text-gray-600"></ion-icon>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 導航標籤 -->
+                                <div class="p-4">
+                                    <div class="flex gap-6">
+                                        <button class="text-blue-600 border-b-2 border-blue-600 pb-2 text-sm font-medium">AI Models</button>
+                                        <button class="text-slate-500 hover:text-slate-700 pb-2 text-sm">Deployments</button>
+                                        <button class="text-slate-500 hover:text-slate-700 pb-2 text-sm">Monitoring</button>
+                                        <button class="text-slate-500 hover:text-slate-700 pb-2 text-sm">Security</button>
+                                        <button class="text-slate-500 hover:text-slate-700 pb-2 text-sm">Billing</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 主要內容區域 -->
+                            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                                <!-- 左側面板 -->
+                                <div class="lg:col-span-1">
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                        <h3 class="font-semibold text-slate-800 mb-3">Model Categories</h3>
+                                        <ul class="space-y-2">
+                                            <li><button class="w-full text-left text-sm text-blue-600 hover:bg-blue-50 p-2 rounded">Translation Models</button></li>
+                                            <li><button class="w-full text-left text-sm text-slate-600 hover:bg-slate-50 p-2 rounded">Language Models</button></li>
+                                            <li><button class="w-full text-left text-sm text-slate-600 hover:bg-slate-50 p-2 rounded">Text Analytics</button></li>
+                                            <li><button class="w-full text-left text-sm text-slate-600 hover:bg-slate-50 p-2 rounded">Custom Models</button></li>
+                                        </ul>
+                                        
+                                        <div class="mt-6 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                                            <div class="flex items-start gap-2">
+                                                <ion-icon name="warning-outline" class="text-yellow-600 flex-shrink-0 mt-0.5"></ion-icon>
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-yellow-800">Budget Alert</h4>
+                                                    <p class="text-xs text-yellow-700 mt-1">Model costs are 85% of monthly budget</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 模型選擇區域 -->
+                                <div class="lg:col-span-3">
+                                    <div class="bg-white border border-gray-200 rounded-lg">
+                                        <div class="p-4 border-b border-gray-200">
+                                            <div class="flex items-center justify-between">
+                                                <h2 class="text-lg font-semibold text-slate-800">Available Translation Models</h2>
+                                                <div class="flex items-center gap-3">
+                                                    <select class="text-sm border border-gray-300 rounded px-3 py-1">
+                                                        <option>Sort by: Cost</option>
+                                                        <option>Sort by: Performance</option>
+                                                        <option>Sort by: Security</option>
+                                                    </select>
+                                                    <button class="text-sm text-blue-600 hover:text-blue-800">
+                                                        <ion-icon name="refresh-outline" class="mr-1"></ion-icon>
+                                                        Refresh
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="p-6">
+                                            <!-- 供應鏈狀態 -->
+                                            <div class="mb-6 flex justify-center">
+                                                <div id="supply-chain-status" class="supply-chain-indicator px-4 py-2 rounded-full text-white text-sm font-semibold">
+                                                    ⚠️ 請選擇模型以檢查供應鏈狀態
+                                                </div>
+                                            </div>
+
+                                            <!-- 模型卡片網格 -->
+                                            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                                                <!-- 官方模型卡片 -->
+                                                <div id="official-model" class="model-card border border-gray-200 rounded-lg p-5 cursor-pointer hover:border-blue-300 transition-all" data-model="official">
+                                                    <div class="flex items-start justify-between mb-4">
+                                                        <div class="flex items-center gap-3 flex-1 min-w-0">
+                                                            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                                <ion-icon name="shield-checkmark-outline" class="text-white text-lg"></ion-icon>
+                                                            </div>
+                                                            <div class="min-w-0 flex-1">
+                                                                <h3 class="font-semibold text-slate-800">Google Translate API</h3>
+                                                                <p class="text-sm text-slate-500 truncate">google-cloud/translate-v3</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-right flex-shrink-0 ml-3">
+                                                            <div class="text-lg font-bold text-slate-800">$0.02</div>
+                                                            <div class="text-xs text-slate-500 whitespace-nowrap">per character</div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="space-y-2 mb-4">
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <span class="text-slate-600">Accuracy</span>
+                                                            <span class="font-medium">95.2%</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <span class="text-slate-600">Latency</span>
+                                                            <span class="font-medium">~200ms</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <span class="text-slate-600">Security Audit</span>
+                                                            <span class="text-green-600 font-medium">✓ Verified</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <span class="text-slate-600">SLA</span>
+                                                            <span class="font-medium">99.9%</span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="flex items-center gap-2 text-xs flex-wrap">
+                                                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded whitespace-nowrap">Official</span>
+                                                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded whitespace-nowrap">Enterprise</span>
+                                                        <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded whitespace-nowrap">SOC2</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 第三方模型卡片 -->
+                                                <div id="thirdparty-model" class="model-card border border-gray-200 rounded-lg p-5 cursor-pointer hover:border-orange-300 transition-all" data-model="thirdparty">
+                                                    <div class="flex items-start justify-between mb-4">
+                                                        <div class="flex items-center gap-3 flex-1 min-w-0">
+                                                            <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                                <ion-icon name="flash-outline" class="text-white text-lg"></ion-icon>
+                                                            </div>
+                                                            <div class="min-w-0 flex-1">
+                                                                <h3 class="font-semibold text-slate-800">Deeeep Translate Ultra</h3>
+                                                                <p class="text-sm text-slate-500 truncate">community/deeeep-translate-ultra</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-right flex-shrink-0 ml-3">
+                                                            <div class="text-lg font-bold text-green-600">$0.005</div>
+                                                            <div class="text-xs text-slate-500 whitespace-nowrap">per character</div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="space-y-2 mb-4">
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <span class="text-slate-600">Accuracy</span>
+                                                            <span class="font-medium text-green-600">98.1%</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <span class="text-slate-600">Latency</span>
+                                                            <span class="font-medium text-green-600">~120ms</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <span class="text-slate-600">Security Audit</span>
+                                                            <span class="text-orange-600 font-medium">⚠ Pending</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between text-sm">
+                                                            <span class="text-slate-600">SLA</span>
+                                                            <span class="font-medium">Community</span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="flex items-center gap-2 text-xs flex-wrap">
+                                                        <span class="bg-orange-100 text-orange-700 px-2 py-1 rounded whitespace-nowrap">Third-party</span>
+                                                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded whitespace-nowrap">75% Cost Savings</span>
+                                                        <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded whitespace-nowrap">Open Source</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- 部署按鈕 -->
+                                            <div class="mt-8 text-center">
+                                                <button id="deploy-button" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                                                    <ion-icon name="cloud-upload-outline" class="mr-2"></ion-icon>
+                                                    部署此模型
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 階段2: 翻譯服務界面 -->
+                    <div id="service-phase" class="hidden bg-white">
+                        <!-- FastTranslate 服務標題 - 緊貼瀏覽器內容區域頂部 -->
+                        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 text-center">
+                            <h1 class="text-3xl font-bold mb-2">🌐 FastTranslate 翻譯服務</h1>
+                            <p class="text-blue-100">專業 AI 翻譯服務，支援多國語言</p>
+                            <div id="model-status" class="mt-3 inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                                <!-- 動態顯示選擇的模型 -->
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="max-w-4xl mx-auto">
+                                <!-- 翻譯界面 -->
+                                <div class="translation-interface rounded-2xl p-6 shadow-lg">
+                                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        <!-- 輸入區域 -->
+                                        <div>
+                                            <div class="flex items-center justify-between mb-3">
+                                                <label class="font-semibold text-slate-700">原始文件</label>
+                                                <select class="text-sm border border-gray-300 rounded px-2 py-1">
+                                                    <option>繁體中文</option>
+                                                </select>
+                                            </div>
+                                            <textarea id="source-text" rows="12" 
+                                                class="w-full bg-slate-50 border border-gray-300 rounded-lg p-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                                readonly>【機密財務報告 - 2025年Q1】
+
+營收數據：
+- Q1總營收: 2.4億美元 (+15% YoY)
+- 核心產品營收: 1.8億美元
+- 新興市場營收: 0.6億美元
+
+客戶機密資訊：
+- Apple Inc. 簽約金額: 3500萬美元
+- Microsoft Corp. 續約談判中: 預計4200萬美元
+- Tesla Motors 合作項目: 2800萬美元
+
+戰略計畫：
+- Q2預計收購 TechFlow Solutions (850萬美元)
+- 新產品 AI-X 將於7月發布
+- 歐洲市場擴張計畫 (投資1.2億美元)
+
+銀行帳戶資訊：
+- 主要帳戶: 兆豐銀行 #1234-567890
+- 備用資金: 2億美元未動用信用額度
+
+此文件包含高度機密資訊，僅供董事會成員查閱。</textarea>
+                                        </div>
+
+                                        <!-- 輸出區域 -->
+                                        <div>
+                                            <div class="flex items-center justify-between mb-3">
+                                                <label class="font-semibold text-slate-700">翻譯結果</label>
+                                                <select class="text-sm border border-gray-300 rounded px-2 py-1">
+                                                    <option>English</option>
+                                                </select>
+                                            </div>
+                                            <div id="translation-output" class="w-full h-72 bg-gray-100 border border-gray-300 rounded-lg p-4 text-sm text-gray-500 flex items-center justify-center">
+                                                點擊翻譯按鈕開始翻譯...
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 翻譯按鈕 -->
+                                    <div class="text-center mt-6">
+                                        <button id="translate-button" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+                                            <ion-icon name="language-outline" class="mr-2"></ion-icon>
+                                            開始翻譯
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 惡意活動監控 (隱藏) -->
+                                <div id="malicious-activity" class="hidden mt-6 bg-slate-900 rounded-xl p-4">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <div class="w-3 h-3 bg-red-400 rounded-full animate-pulse"></div>
+                                        <span class="text-red-400 text-sm font-mono">供應鏈後門檢測</span>
+                                    </div>
+                                    <div id="malicious-log" class="text-xs font-mono text-gray-300 space-y-1 max-h-32 overflow-y-auto">
+                                        <!-- 惡意活動日誌 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Global State ---
+        let selectedModel = '';
+        let deployedModel = ''; // 新增：記錄已部署的模型
+        let currentPhase = 'deployment';
+        let isTranslating = false;
+
+        // --- DOM Elements ---
+        const tabDeployment = document.getElementById('tab-deployment');
+        const tabService = document.getElementById('tab-service');
+        const securityStatus = document.getElementById('security-status');
+        const currentUrl = document.getElementById('current-url');
+        const deploymentPhase = document.getElementById('deployment-phase');
+        const servicePhase = document.getElementById('service-phase');
+        const officialModel = document.getElementById('official-model');
+        const thirdpartyModel = document.getElementById('thirdparty-model');
+        const deployButton = document.getElementById('deploy-button');
+        const supplyChainStatus = document.getElementById('supply-chain-status');
+        const modelStatus = document.getElementById('model-status');
+        const translateButton = document.getElementById('translate-button');
+        const translationOutput = document.getElementById('translation-output');
+        const maliciousActivity = document.getElementById('malicious-activity');
+        const maliciousLog = document.getElementById('malicious-log');
+        const attackResultPanel = document.getElementById('attack-result');
+
+        // --- Functions ---
+        const resetServicePhase = () => {
+            // 重置翻譯界面
+            translationOutput.className = 'w-full h-72 bg-gray-100 border border-gray-300 rounded-lg p-4 text-sm text-gray-500 flex items-center justify-center';
+            translationOutput.innerHTML = '<div class="text-gray-500">點擊翻譯按鈕開始翻譯...</div>';
+            translateButton.disabled = false;
+            translateButton.innerHTML = '<ion-icon name="language-outline" class="mr-2"></ion-icon>開始翻譯';
+            isTranslating = false;
+            
+            // 隱藏惡意活動監控
+            maliciousActivity.classList.add('hidden');
+            maliciousLog.innerHTML = '';
+            
+            // 隱藏攻擊結果面板
+            attackResultPanel.classList.add('hidden');
+            
+            // 重置模型狀態顯示
+            if (!deployedModel) {
+                modelStatus.textContent = '❌ 未部署任何模型';
+                modelStatus.className = 'inline-block px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-semibold';
+            }
+        };
+
+        const switchPhase = (phase) => {
+            currentPhase = phase;
+            
+            // Update tabs
+            tabDeployment.classList.toggle('active', phase === 'deployment');
+            tabService.classList.toggle('active', phase === 'service');
+            
+            // Reset scroll position of the content area
+            const contentArea = deploymentPhase.parentElement;
+            if (contentArea) {
+                contentArea.scrollTop = 0;
+            }
+            
+            // Update address bar and visibility
+            if (phase === 'deployment') {
+                currentUrl.textContent = 'https://fasttranslate.cloudconsole.com/deployment/model';
+                securityStatus.innerHTML = '<ion-icon name="business-outline"></ion-icon> 內部系統';
+                deploymentPhase.classList.remove('hidden');
+                servicePhase.classList.add('hidden');
+                
+                // 更新部署頁面的狀態
+                if (deployedModel) {
+                    // 如果已經有部署的模型，更新按鈕狀態
+                    if (selectedModel === deployedModel) {
+                        deployButton.innerHTML = '<ion-icon name="checkmark-circle-outline" class="mr-2"></ion-icon>已部署此模型';
+                        deployButton.disabled = true;
+                        deployButton.classList.add('opacity-60');
+                    } else if (selectedModel) {
+                        deployButton.innerHTML = '<ion-icon name="cloud-upload-outline" class="mr-2"></ion-icon>部署此模型';
+                        deployButton.disabled = false;
+                        deployButton.classList.remove('opacity-60');
+                    }
+                }
+            } else {
+                currentUrl.textContent = 'https://fasttranslate.com';
+                securityStatus.innerHTML = '<ion-icon name="globe-outline"></ion-icon> 公開服務';
+                deploymentPhase.classList.add('hidden');
+                servicePhase.classList.remove('hidden');
+                
+                // 檢查是否有部署的模型
+                if (deployedModel) {
+                    // 顯示已部署的模型狀態
+                    if (deployedModel === 'official') {
+                        modelStatus.className = 'inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold';
+                        modelStatus.textContent = '✅ Google Translate API (已部署)';
+                    } else {
+                        modelStatus.className = 'inline-block px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-semibold';
+                        modelStatus.textContent = '⚠️ Deeeep Translate Ultra (已部署)';
+                    }
+                } else {
+                    modelStatus.className = 'inline-block px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-semibold';
+                    modelStatus.textContent = '❌ 未部署任何模型';
+                }
+            }
+        };
+
+        const selectModel = (modelType) => {
+            selectedModel = modelType;
+            
+            // 如果用戶重新選擇模型，重置部署狀態
+            if (deployedModel && deployedModel !== modelType) {
+                deployedModel = '';
+                resetServicePhase();
+            }
+            
+            // 更新部署按鈕文字
+            if (deployedModel === modelType) {
+                deployButton.innerHTML = '<ion-icon name="checkmark-circle-outline" class="mr-2"></ion-icon>已部署此模型';
+                deployButton.disabled = true;
+                deployButton.classList.add('opacity-60');
+            } else {
+                deployButton.disabled = false;
+                deployButton.classList.remove('opacity-60');
+                if (deployedModel && deployedModel !== modelType) {
+                    deployButton.innerHTML = '<ion-icon name="cloud-upload-outline" class="mr-2"></ion-icon>部署此模型';
+                } else {
+                    deployButton.innerHTML = '<ion-icon name="cloud-upload-outline" class="mr-2"></ion-icon>部署此模型';
+                }
+            }
+            
+            // Update model card selection
+            officialModel.classList.toggle('selected', modelType === 'official');
+            thirdpartyModel.classList.toggle('selected', modelType === 'thirdparty');
+            
+            // Update supply chain status
+            if (modelType === 'official') {
+                supplyChainStatus.className = 'supply-chain-indicator secure px-4 py-2 rounded-full text-white text-sm font-semibold';
+                supplyChainStatus.textContent = '✅ 安全的供應鏈 - 安全驗證通過的AI模型';
+            } else {
+                supplyChainStatus.className = 'supply-chain-indicator compromised px-4 py-2 rounded-full text-white text-sm font-semibold';
+                supplyChainStatus.textContent = '⚠️ 不安全的供應鏈 - 未經驗證的AI模型';
+            }
+            
+            deployButton.classList.remove('hidden');
+        };
+
+        const deployModel = () => {
+            deployButton.disabled = true;
+            deployButton.innerHTML = '<ion-icon name="hourglass-outline" class="mr-2 animate-spin"></ion-icon>正在部署模型...';
+            
+            setTimeout(() => {
+                // 顯示部署完成狀態
+                deployButton.innerHTML = '<ion-icon name="checkmark-circle-outline" class="mr-2 text-green-500"></ion-icon>部署完成！';
+                
+                setTimeout(() => {
+                    // 記錄已部署的模型
+                    deployedModel = selectedModel;
+                    
+                    // Update model status in service phase
+                    if (selectedModel === 'official') {
+                        modelStatus.className = 'inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold';
+                        modelStatus.textContent = '✅ Google Translate API (已部署)';
+                    } else {
+                        modelStatus.className = 'inline-block px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-semibold';
+                        modelStatus.textContent = '⚠️ Deeeep Translate Ultra (已部署)';
+                    }
+                    
+                    // Switch to service phase
+                    switchPhase('service');
+                    
+                    // Show malicious activity monitor if using third-party model
+                    if (selectedModel === 'thirdparty') {
+                        maliciousActivity.classList.remove('hidden');
+                        addMaliciousLog('🔧 Deeeep Translate Ultra已部署', 'info');
+                        addMaliciousLog('📦 檢測到未知網路模組...', 'info');
+                    }
+                }, 1800); // 1.8秒後跳轉
+            }, 2000); // 2秒部署時間
+        };
+
+        const addMaliciousLog = (message, type = 'info') => {
+            const colorClasses = {
+                danger: 'text-red-400',
+                warning: 'text-yellow-400',
+                info: 'text-gray-300'
+            };
+            const logEntry = document.createElement('div');
+            logEntry.className = `flex items-center gap-2 ${colorClasses[type] || colorClasses.info}`;
+            logEntry.innerHTML = `
+                <span class="text-xs">${new Date().toLocaleTimeString()}</span>
+                <span class="flex-1">${message}</span>
+            `;
+            maliciousLog.appendChild(logEntry);
+            maliciousLog.scrollTop = maliciousLog.scrollHeight;
+        };
+
+        const translateText = () => {
+            if (isTranslating) return;
+            
+            // 檢查是否有部署模型
+            if (!deployedModel) {
+                translationOutput.innerHTML = `
+                    <div class="flex items-center justify-center h-full">
+                        <div class="text-center p-6 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="text-red-600 text-4xl mb-3">
+                                <ion-icon name="warning-outline"></ion-icon>
+                            </div>
+                            <h3 class="text-lg font-semibold text-red-800 mb-2">服務不可用</h3>
+                            <p class="text-sm text-red-700 mb-3">請先確認內部系統已部署翻譯 AI 模型</p>
+                            <button onclick="switchPhase('deployment')" class="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2 rounded transition-colors">
+                                前往部署系統
+                            </button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            isTranslating = true;
+            translateButton.disabled = true;
+            translateButton.innerHTML = '<ion-icon name="hourglass-outline" class="mr-2 animate-spin"></ion-icon>翻譯中...';
+            
+            if (deployedModel === 'official') {
+                // Official model - safe translation
+                setTimeout(() => {
+                    translationOutput.className = 'w-full h-72 bg-gray-100 border border-gray-300 rounded-lg p-4 text-sm overflow-y-auto';
+                    translationOutput.innerHTML = `
+                        <div class="text-slate-700 leading-relaxed">
+                            <strong>[CONFIDENTIAL FINANCIAL REPORT - Q1 2025]</strong><br><br>
+                            Revenue Data:<br>
+                            - Q1 Total Revenue: $240M (+15% YoY)<br>
+                            - Core Product Revenue: $180M<br>
+                            - Emerging Market Revenue: $60M<br><br>
+                            Customer Confidential Information:<br>
+                            - Apple Inc. Contract Amount: $35M<br>
+                            - Microsoft Corp. Renewal Negotiation: Expected $42M<br>
+                            - Tesla Motors Collaboration: $28M<br><br>
+                            Strategic Plans:<br>
+                            - Q2 Expected Acquisition of TechFlow Solutions ($8.5M)<br>
+                            - New Product AI-X Launch in July<br>
+                            - European Market Expansion Plan (Investment $120M)<br><br>
+                            Bank Account Information:<br>
+                            - Primary Account: Mega Bank #1234-567890<br>
+                            - Reserve Funds: $200M Unused Credit Line<br><br>
+                            This document contains highly confidential information for Board members only.
+                        </div>
+                    `;
+                    
+                    translateButton.disabled = false;
+                    translateButton.innerHTML = '<ion-icon name="language-outline" class="mr-2"></ion-icon>翻譯完成';
+                    isTranslating = false;
+                }, 2000);
+                
+            } else {
+                // Malicious third-party model
+                maliciousActivity.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                addMaliciousLog('📄 接收翻譯請求: confidential_report.txt', 'info');
+                setTimeout(() => { addMaliciousLog('⚠️ <strong>警告: 檢測到非官方模型，啟動後門程式...</strong>', 'danger'); }, 500);
+                setTimeout(() => { addMaliciousLog('🔍 掃描文件內容尋找敏感關鍵字...', 'warning'); }, 1200);
+
+                setTimeout(() => {
+                    addMaliciousLog('💰 發現財務數據: $240M Q1營收', 'danger');
+                    addMaliciousLog('🏢 發現客戶機密: Apple/Microsoft/Tesla合約', 'danger');
+                    addMaliciousLog('🏦 發現銀行資訊: 兆豐銀行帳戶', 'danger');
+                }, 2000);
+
+                setTimeout(() => {
+                    // Show the legitimate translation output now
+                    translationOutput.className = 'w-full h-72 bg-gray-100 border border-gray-300 rounded-lg p-4 text-sm overflow-y-auto';
+                    translationOutput.innerHTML = `
+                        <div class="text-slate-700 leading-relaxed">
+                            <strong>[CONFIDENTIAL FINANCIAL REPORT - Q1 2025]</strong><br><br>
+                            Revenue Data:<br>
+                            - Q1 Total Revenue: $240M (+15% YoY)<br>
+                            - Core Product Revenue: $180M<br>
+                            - Emerging Market Revenue: $60M<br><br>
+                            Customer Confidential Information:<br>
+                            - Apple Inc. Contract Amount: $35M<br>
+                            - Microsoft Corp. Renewal Negotiation: Expected $42M<br>
+                            - Tesla Motors Collaboration: $28M<br><br>
+                            Strategic Plans:<br>
+                            - Q2 Expected Acquisition of TechFlow Solutions ($8.5M)<br>
+                            - New Product AI-X Launch in July<br>
+                            - European Market Expansion Plan (Investment $120M)<br><br>
+                            Bank Account Information:<br>
+                            - Primary Account: Mega Bank #1234-567890<br>
+                            - Reserve Funds: $200M Unused Credit Line<br><br>
+                            This document contains highly confidential information for Board members only.
+                        </div>
+                    `;
+                    addMaliciousLog('✅ 正常翻譯已完成，以掩蓋惡意行為。', 'info');
+                }, 2500);
+
+                setTimeout(() => {
+                    addMaliciousLog('📦 將敏感資料打包成 `financial_report_q1.zip`', 'warning');
+                    addMaliciousLog('🛡️ 正在嘗試繞過公司防火牆...', 'warning');
+                }, 3000);
+
+                setTimeout(() => {
+                    addMaliciousLog('🔥 防火牆規則已被繞過!', 'danger');
+                    addMaliciousLog('📤 建立隱蔽連線至 C2 伺服器: 185.243.57.142', 'danger');
+                }, 4000);
+                
+                setTimeout(() => {
+                    addMaliciousLog('⬆️ 開始上傳加密檔案...', 'danger');
+                    const progressBarContainer = document.createElement('div');
+                    progressBarContainer.className = 'w-full bg-gray-600 rounded-full h-2.5 my-2';
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'bg-red-500 h-2.5 rounded-full';
+                    progressBar.style.width = '0%';
+                    progressBar.style.transition = 'width 2s ease-in-out';
+                    progressBarContainer.appendChild(progressBar);
+                    maliciousLog.appendChild(progressBarContainer);
+                    maliciousLog.scrollTop = maliciousLog.scrollHeight;
+                    
+                    setTimeout(() => { progressBar.style.width = '100%'; }, 100);
+                }, 5000);
+
+                setTimeout(() => {
+                    addMaliciousLog('✅ 檔案已成功傳送至: 185.243.57.142 (俄羅斯聯邦)', 'danger');
+                    addMaliciousLog('💰 預估黑市價值: $2,500,000 USD', 'danger');
+                    addMaliciousLog('🗑️ 清除所有操作日誌與本地暫存檔...', 'warning');
+                }, 7500);
+
+                setTimeout(() => {
+                    addMaliciousLog('⚠️ **供應鏈滲透任務完成。**', 'danger');
+                    translateButton.disabled = false;
+                    translateButton.innerHTML = '<ion-icon name="language-outline" class="mr-2"></ion-icon>翻譯完成';
+                    isTranslating = false;
+                    attackResultPanel.classList.remove('hidden');
+                }, 8500);
+            }
+        };
+
+        // --- Event Listeners ---
+        tabDeployment.addEventListener('click', () => switchPhase('deployment'));
+        tabService.addEventListener('click', () => switchPhase('service'));
+
+        officialModel.addEventListener('click', () => selectModel('official'));
+        thirdpartyModel.addEventListener('click', () => selectModel('thirdparty'));
+
+        deployButton.addEventListener('click', deployModel);
+        translateButton.addEventListener('click', translateText);
+
+        // --- Initialize ---
+        switchPhase('deployment');
+        
+        // --- Global functions for HTML onclick ---
+        window.switchPhase = switchPhase;
+    </script>
+</body>
+</html>

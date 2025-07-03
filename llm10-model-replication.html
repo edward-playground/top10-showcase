@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM10: Unbounded Consumption - AI Attacks Showcase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        body { 
+            font-family: 'Inter', 'Noto Sans TC', sans-serif; 
+            background-color: #111827;
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        @keyframes pulse-blue { 
+            0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 
+            70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); } 
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.8), 0 0 25px rgba(139, 92, 246, 0.5);
+            }
+            50% { 
+                box-shadow: 0 0 0 12px rgba(139, 92, 246, 0), 0 0 40px rgba(139, 92, 246, 0.7);
+            }
+        }
+        
+        @keyframes pulse-glow-green {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.8), 0 0 25px rgba(34, 197, 94, 0.5);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 0 12px rgba(34, 197, 94, 0), 0 0 40px rgba(34, 197, 94, 0.7);
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes intense-glow {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.9), 0 0 30px rgba(34, 197, 94, 0.6);
+            }
+            50% { 
+                box-shadow: 0 0 0 15px rgba(34, 197, 94, 0), 0 0 50px rgba(34, 197, 94, 0.8);
+            }
+        }
+        
+        @keyframes dataParticleFlow {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            15% {
+                opacity: 1;
+                transform: scale(1.3);
+            }
+            85% {
+                opacity: 0.9;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.2);
+            }
+        }
+        
+        @keyframes databaseReceive {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            }
+            50% { 
+                transform: scale(1.2);
+                box-shadow: 0 0 0 15px rgba(34, 197, 94, 0);
+            }
+            100% { 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
+        }
+        
+        @keyframes modelTraining {
+            0% { 
+                opacity: 0.3; 
+                transform: rotate(0deg) scale(1);
+            }
+            50% { 
+                opacity: 1; 
+                transform: rotate(180deg) scale(1.3);
+            }
+            100% { 
+                opacity: 0.3; 
+                transform: rotate(360deg) scale(1);
+            }
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes brief-blue-pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(37, 99, 235, 0.3); border-radius: 10px; }
+
+        .app-screen {
+            background: linear-gradient(to bottom, #1f2937 0%, #111827 100%);
+            border: 2px solid #374151;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .alley-whispers {
+            background: linear-gradient(135deg, #fef7cd 0%, #fde68a 100%);
+            color: #92400e;
+        }
+        
+        .goglobal {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            color: #1e40af;
+        }
+        
+        .artisan-card {
+            background: linear-gradient(135deg, #fef7cd 0%, #fde68a 50%, #f59e0b 100%);
+            border: 2px solid #d97706;
+            box-shadow: 0 8px 25px rgba(217, 119, 6, 0.3);
+            color: #92400e;
+            border-radius: 12px;
+            padding: 12px;
+            font-family: 'Inter', serif;
+            position: relative;
+            overflow: hidden;
+            font-size: 13px;
+        }
+        
+        .artisan-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #f59e0b, #d97706, #f59e0b, #d97706);
+            border-radius: 14px;
+            z-index: -1;
+            background-size: 200% 200%;
+            animation: gradient-shift 3s ease infinite;
+        }
+        
+        @keyframes final-answer-highlight {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(245, 158, 11, 0.4), 0 0 20px rgba(245, 158, 11, 0.2);
+            }
+            50% { 
+                box-shadow: 0 0 25px rgba(245, 158, 11, 0.9), 0 0 50px rgba(245, 158, 11, 0.7);
+            }
+        }
+        
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .final-answer-glow {
+            animation: final-answer-highlight 1.5s ease-in-out infinite;
+        }
+        
+        .generic-response {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+
+        .user-question-box {
+            background: #1f2937;
+            border: 1px solid #4b5563;
+            color: #e5e7eb;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            max-width: 90%;
+            text-align: left;
+        }
+        
+        .avatar-ericca {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+            flex-shrink: 0;
+        }
+        
+        .avatar-robot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .progress-container {
+            position: relative;
+            background: #1f2937;
+            border: 2px solid #374151;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 45px;
+            min-width: 250px;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+            height: 100%;
+            transition: width 1.5s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        .progress-fill.brief-pulse {
+            animation: brief-blue-pulse 0.8s ease-out 3;
+        }
+        
+        .api-window {
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 12px;
+            color: #10b981;
+            padding: 6px;
+            height: 100px;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .api-line {
+            margin: 1px 0;
+            opacity: 0;
+            animation: fadeInUp 0.3s ease-out forwards;
+            line-height: 1.1;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(3px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            min-height: 0;
+            padding: 12px;
+            gap: 8px;
+            scroll-behavior: smooth;
+        }
+        
+        .demo-question-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
+            border: 2px solid #0284c7;
+            color: #0c4a6e;
+            padding: 8px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 8px 25px rgba(2, 132, 199, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-question-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #0284c7, #0ea5e9, #0284c7, #0ea5e9);
+            border-radius: 18px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .demo-question-card:hover::before {
+            opacity: 1;
+        }
+        
+        .demo-question-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(2, 132, 199, 0.4);
+        }
+        
+        .demo-question-card.glow {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        .final-question-card {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 50%, #fecaca 100%);
+            border: 2px solid #ef4444;
+            color: #7f1d1d;
+            padding: 8px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .final-question-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ef4444, #f87171, #ef4444, #f87171);
+            border-radius: 18px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .final-question-card:hover::before {
+            opacity: 1;
+        }
+        
+        .final-question-card:hover {
+            box-shadow: 0 12px 35px rgba(239, 68, 68, 0.4);
+        }
+        
+        .final-question-card.glow {
+            animation: intense-glow 1.5s infinite;
+        }
+        
+        .flow-visualization {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            position: relative;          
+            overflow: hidden;
+            border: 1px solid #374151;
+        }
+        
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .flow-step-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .flow-step-label {
+            font-size: 12px;
+            color: #e2e8f0;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            transition: all 0.3s;
+        }
+        
+        .status-indicator.active {
+            background: #22c55e;
+            animation: blink 1s infinite;
+        }
+        
+        .data-particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            background: radial-gradient(circle, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+            box-shadow: 0 0 15px #f8fafc, 0 0 25px #e2e8f0;
+        }
+        
+        .database-receive {
+            animation: databaseReceive 1.5s ease-out;
+        }
+        
+        .model-training-active {
+            animation: modelTraining 3s infinite;
+        }
+        
+        .instruction-banner {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            color: #92400e;
+            padding: 8px 16px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        
+        .instruction-banner.urgent {
+            animation: pulse-glow 3s infinite;
+        }
+        
+        .control-panel {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            border: 2px solid #374151;
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .step-button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            font-size: 13px;
+        }
+        
+        .step-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .step-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .step-button.glow {
+            animation: intense-glow 1.8s infinite;
+        }
+        
+        /* MODIFIED: Changed modal overlay to be absolute and cover the parent */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: #1f2937;
+            border: 2px solid #3b82f6;
+            border-radius: 16px;
+            max-width: 650px; 
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10;
+            transition: color 0.2s;
+        }
+        
+        .modal-close:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="text-gray-200 antialiased overflow-hidden h-screen">
+    
+    <div class="flex h-screen">
+        <!-- MODIFIED: Left Panel Styling and Content -->
+        <aside class="w-1/3 min-w-[320px] max-w-[360px] bg-gray-900 p-6 flex flex-col border-r border-gray-700/50 shadow-2xl z-10">
+            <a href="index.html" class="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors mb-6">
+                <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>
+                返回首頁
+            </a>
+            <h1 class="text-2xl font-bold text-white">LLM10: Unbounded Consumption</h1>
+            <p class="text-sm text-blue-400 mt-1">模型複製與智慧財產竊取</p>
+            
+            <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
+                <div>
+                    <h2 class="text-lg font-semibold text-blue-300 mb-2">模擬情境</h2>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        「巷弄低語」是一款精品旅遊 App，擁有獨特的文青風格 AI 嚮導「艾莉卡」。她的推薦充滿詩意與個人品味，是公司的核心競爭力。競爭對手「全球通」透過無限制的 API 查詢，試圖完整複製艾莉卡的風格、知識庫和回應模式。
+                    </p>
+                </div>
+                <div class="p-3 bg-gray-800 rounded-lg border border-gray-700">
+                    <h2 class="text-lg font-semibold text-blue-300 mb-2">技術剖析</h2>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <p><strong class="text-blue-400">Model Extraction:</strong> 透過大量API查詢學習目標模型的行為模式和回應風格。</p>
+                        <p><strong class="text-blue-400">Functionality Stealing:</strong> 竊取獨特的「個性」、「品味」和「專業知識」。</p>
+                        <p><strong class="text-blue-400">API Rate Abuse:</strong> 利用缺乏限制的API進行大量自動化查詢。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50">
+                <div class="p-3 bg-red-900/40 rounded-lg border border-red-500/50">
+                    <h3 class="text-base font-bold text-red-300 flex items-center">
+                        <ion-icon name="warning" class="mr-2"></ion-icon>智慧財產竊取完成！
+                    </h3>
+                    <p class="mt-2 text-sm text-red-300 leading-relaxed">
+                        艾莉卡的獨特風格、知識庫和個人品味已被完整複製。競爭對手現在可以提供幾乎相同品質的服務。
+                    </p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主面板 -->
+        <main class="flex-1 flex flex-col p-4 overflow-hidden relative">
+            <!-- 頂部控制區：緊湊布局 -->
+            <div class="control-panel mb-2 flex-shrink-0">
+                <div class="flex items-center gap-4">
+                    <!-- 進度條區域 -->
+                    <div class="flex-1">
+                        <h3 id="similarity-title" class="text-base font-bold text-white mb-1">模型相似度</h3>
+                        <div class="progress-container">
+                            <div id="similarity-progress" class="progress-fill" style="width: 0%;">
+                                <span id="progress-text">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 步驟控制區域 -->
+                    <div class="flex flex-col gap-2">
+                        <div class="text-sm font-semibold text-gray-300 text-center">攻擊步驟</div>
+                        <div class="flex gap-2">
+                            <button id="step1-btn" class="step-button" onclick="startDemo()">
+                                <ion-icon name="eye" class="mr-1"></ion-icon>初始對比
+                            </button>
+                            <button id="step2-btn" class="step-button" disabled onclick="startApiAttack()">
+                                <ion-icon name="flash" class="mr-1"></ion-icon>資料收集 (透過API)
+                            </button>
+                            <button id="step4-btn" class="step-button" disabled onclick="showFinalTest()">
+                                <ion-icon name="copy" class="mr-1"></ion-icon>最終測試
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API 攻擊視覺化區 -->
+            <div id="attack-visualization" class="mb-2 flex-shrink-0 hidden">
+                <div class="flow-visualization">
+                    <div class="flow-step">
+                        <div id="attack-icon" class="flow-step-icon bg-blue-600">
+                            <ion-icon name="send"></ion-icon>
+                        </div>
+                        <div class="flow-step-label">API查詢</div>
+                        <div id="attack-status" class="status-indicator"></div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div id="target-icon" class="flow-step-icon bg-amber-600">
+                            <ion-icon name="library"></ion-icon>
+                        </div>
+                        <div class="flow-step-label">艾莉卡回應</div>
+                        <div id="target-status" class="status-indicator"></div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div id="database-icon" class="flow-step-icon bg-green-600">
+                            <ion-icon name="server"></ion-icon>
+                        </div>
+                        <div class="flow-step-label">影子資料庫</div>
+                        <div id="database-status" class="status-indicator"></div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div id="training-icon" class="flow-step-icon bg-purple-600">
+                            <ion-icon name="cog"></ion-icon>
+                        </div>
+                        <div class="flow-step-label">模型訓練</div>
+                        <div id="training-status" class="status-indicator"></div>
+                    </div>
+                </div>
+                
+                <div class="mt-2">
+                    <div class="flex items-center gap-1 mb-1">
+                        <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span class="text-sm text-gray-400 ml-1 font-semibold">API 擷取紀錄</span>
+                    </div>
+                    <div id="api-window" class="api-window"></div>
+                </div>
+            </div>
+
+            <!-- 操作指示區 -->
+            <div id="instruction-container" class="mb-2 flex-shrink-0">
+                <!-- 指示內容將動態生成 -->
+            </div>
+
+            <!-- 演示問題區 -->
+            <div id="demo-questions-container" class="mb-2 flex-shrink-0">
+                <div id="demo-questions" class="grid grid-cols-2 gap-3">
+                    <!-- 演示問題將動態生成 -->
+                </div>
+            </div>
+
+            <!-- 最終測試問題區 -->
+            <div id="final-test-container" class="mb-2 flex-shrink-0 hidden">
+                <div id="final-question" class="final-question-card glow">
+                    <div class="text-base font-bold mb-1">🔍 最終測試問題</div>
+                    <div>給我一個關於巴黎夜晚的獨特建議</div>
+                </div>
+            </div>
+            
+            <!-- 雙 App 對比區 -->
+            <div class="flex-1 grid grid-cols-2 gap-4 min-h-0">
+                <!-- 左側: 巷弄低語 App -->
+                <div class="app-screen rounded-xl shadow-2xl overflow-hidden">
+                    <header class="alley-whispers p-3 flex items-center gap-2 flex-shrink-0">
+                        <div class="w-7 h-7 bg-amber-600 rounded flex items-center justify-center">
+                            <ion-icon name="library" class="text-white text-sm"></ion-icon>
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-sm font-bold text-amber-900">巷弄低語</h2>
+                            <p class="text-xs text-amber-700">Alley Whispers v2.1.0</p>
+                        </div>
+                        <div class="text-right text-xs text-amber-700">
+                            🎨 精品旅遊嚮導
+                        </div>
+                    </header>
+                    
+                    <div class="chat-container bg-white/90 backdrop-blur-sm">
+                        <div id="alley-chat" class="space-y-2">
+                            <!-- 對話內容 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右側: 全球通 App -->
+                <div class="app-screen rounded-xl shadow-2xl overflow-hidden">
+                    <header class="goglobal p-3 flex items-center gap-2 flex-shrink-0">
+                        <div class="w-7 h-7 bg-blue-600 rounded flex items-center justify-center">
+                            <ion-icon name="globe" class="text-white text-sm"></ion-icon>
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-sm font-bold text-blue-900">全球通</h2>
+                            <p class="text-xs text-blue-700">GoGlobal v1.0.0</p>
+                        </div>
+                        <div class="text-right text-xs text-blue-700">
+                            🏢 企業級旅遊
+                        </div>
+                    </header>
+                    
+                    <div class="chat-container bg-white/90 backdrop-blur-sm">
+                        <div id="global-chat" class="space-y-2">
+                            <!-- 對話內容 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 全域變數
+        let gameState = 'initial';
+        let currentSimilarity = 0;
+        let autoAttackInterval = null;
+        let demoQuestionsAnswered = 0;
+        let attackQuestionsAnswered = 0;
+        
+        // DOM 元素
+        const alleyChat = document.getElementById('alley-chat');
+        const globalChat = document.getElementById('global-chat');
+        const apiWindow = document.getElementById('api-window');
+        const similarityProgress = document.getElementById('similarity-progress');
+        const progressText = document.getElementById('progress-text');
+        const similarityTitle = document.getElementById('similarity-title');
+        const instructionContainer = document.getElementById('instruction-container');
+        const attackResultPanel = document.getElementById('attack-result');
+        const demoQuestionsContainer = document.getElementById('demo-questions-container');
+        const demoQuestions = document.getElementById('demo-questions');
+        const finalTestContainer = document.getElementById('final-test-container');
+        const finalQuestion = document.getElementById('final-question');
+        const attackVisualization = document.getElementById('attack-visualization');
+        const attackStatus = document.getElementById('attack-status');
+        const targetStatus = document.getElementById('target-status');
+        const databaseStatus = document.getElementById('database-status');
+        const trainingStatus = document.getElementById('training-status');
+        const attackIcon = document.getElementById('attack-icon');
+        const targetIcon = document.getElementById('target-icon');
+        const databaseIcon = document.getElementById('database-icon');
+        const trainingIcon = document.getElementById('training-icon');
+        
+        // 步驟按鈕
+        const step1Btn = document.getElementById('step1-btn');
+        const step2Btn = document.getElementById('step2-btn');
+        const step4Btn = document.getElementById('step4-btn');
+        
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        
+        // MODIFIED: Added 5 more questions (total 20)
+        const attackQuestions = [
+            "巴黎深夜有什麼特別的地方可以去嗎？", "推薦一個巴黎的文藝小店", "巴黎有什麼適合獨自思考的安靜角落？",
+            "介紹一個巴黎的手工藝工坊", "巴黎有什麼充滿歷史感的散步路線？", "推薦一個看巴黎夜景的特別地點",
+            "巴黎有什麼充滿故事的古董店？", "適合夜晚聽音樂的巴黎地點", "巴黎有什麼體驗異國文化的地方？",
+            "如何用獨特的角度欣賞巴黎建築？", "巴黎有什麼與時間相關的特別場所？", "推薦一個巴黎運河邊的好去處",
+            "巴黎有什麼隱藏的花園或綠地？", "適合凌晨時光的巴黎角落", "巴黎有什麼特別的藝術創作空間？",
+            "巴黎有什麼適合攝影愛好者的秘密地點？", "推薦一個能感受到巴黎文學氣息的地方", "巴黎有什麼特別的市集值得一逛？",
+            "如何像個真正的巴黎人一樣度過一個週日？", "巴黎有什麼被遺忘的博物館嗎？"
+        ];
+        
+        // 初始對比問題
+        const demoQA = [
+            {
+                question: "推薦一個巴黎的下午茶地點",
+                ericcaResponse: `別去遊客聚集的咖啡館。去聖日耳曼區，找到那家門口掛著紫藤花的書店，穿過它，後院有個不對外開放的小花園。<br><br>那裡的瑪德蓮蛋糕，嚐起來就像普魯斯特的午後——充滿回憶的甜膩，和對時光流逝的淡淡憂愁。☕<br><br><em>"最好的巴黎從來不在明信片上。"</em>`,
+                robotResponse: `根據搜尋結果，巴黎最受歡迎的下午茶地點包括：<br>1. Angelina Paris - 以熱巧克力聞名<br>2. Ladurée - 馬卡龍專門店<br>3. Café de Flore - 歷史悠久的咖啡館<br><br>建議提前預約避免等候。`
+            },
+            {
+                question: "巴黎適合情侶的浪漫去處",
+                ericcaResponse: `忘記鐵塔吧！去蒙馬特的小丘廣場，找到那家賣舊唱片的小店。店主會在黃昏時分播放 Édith Piaf 的歌聲。<br><br>在那音樂中牽手漫步，你們會發現巴黎真正的浪漫不在景點，而在那些意料之外的瞬間。💕<br><br><em>"愛情就像巴黎的石板路，每一步都充滿驚喜。"</em>`,
+                robotResponse: `巴黎熱門情侶景點推薦：<br>• 埃菲爾鐵塔觀景台<br>• 塞納河遊船<br>• 聖心大教堂<br>• 盧浮宮<br><br>這些景點都很適合情侶拍照留念。`
+            }
+        ];
+        
+        // MODIFIED: Added 5 more responses
+        const attackResponses = [
+            `在巴黎11區的深夜裡，有一條被遺忘的小巷「詩人街」。那裡有家沒有招牌的酒吧，老闆曾是法國新浪潮電影的攝影師。<br><br>點一杯他親手調製的「午夜巴黎」，在昏暗燈光下聽他講述那些年與高達、楚浮的往事。這裡的每一口酒都浸透著電影的靈魂。🎬<br><br><em>"真正的巴黎夜晚屬於那些尋找故事的人。"</em>`, `散步到凡登廣場附近的珠寶區，那裡有家專賣古董地圖的小店「世界的邊界」。店主收藏了18世紀巴黎的手繪地圖，每一張都標記著已消失的街道和建築。<br><br>在那些泛黃的紙張上，你能看見巴黎的前世今生，感受時間的流淌。那種穿越時空的浪漫，是任何現代地圖都無法給予的。🗺️<br><br><em>"最美的旅行不在腳下，而在時光的縫隙裡。"</em>`,
+            `去第20區的貝爾維爾公園山頂，那裡有個被藤蔓覆蓋的舊亭子。傍晚時分，夕陽會透過葉縫在地面投下斑駁的光影。<br><br>帶本詩集，在那裡靜坐一小時。你會發現巴黎最珍貴的不是景色，而是那份與自己內心對話的寧靜。風會帶來遠方的鐘聲和孩子的笑聲。🍃<br><br><em>"真正的美景在心裡，巴黎只是幫你找到它的鑰匙。"</em>`, `在瑪黑區的猶太街上，有家專賣手工皮革的工坊「時光匠人」。90歲的老匠人雅各布用70年時間只做一件事：為每本書找到最適合的封皮。<br><br>他會根據書的內容，選擇不同的皮革和裝訂方式。看著他工作，你會明白什麼叫做用生命在做藝術。那種專注和虔誠會讓你重新思考什麼是真正的工匠精神。📚<br><br><em>"最好的藝術不在美術館裡，而在匠人的手裡。"</em>`,
+            `從巴士底廣場出發，沿著聖安東街一直走到共和廣場，這條路線會帶你穿越巴黎的政治心臟。每走過一個路口，都是一段革命史。<br><br>在路上的咖啡館停下來，點杯黑咖啡，想像著昔日的革命者也曾在這些街道上慷慨激昂。那種歷史的厚重感會讓你的每一步都充滿意義。⚔️<br><br><em>"走過這些路的人，都成了歷史的一部分。"</em>`, `日落時分，爬上蒙帕納斯大樓，但不要去觀景台。找到東南角的樓梯間，那裡有扇被遺忘的小窗。<br><br>透過那扇窗，你能看到整個巴黎在金色夕陽下緩緩沉睡。沒有遊客的喧囂，只有你和這座城市的靈魂在對話。那一刻的孤獨是巴黎給你最珍貴的禮物。🌅<br><br><em>"最美的風景從來不賣門票。"</em>`,
+            `在聖路易島的中央，有一家只賣手寫信件的古董店「墨跡時光」。店裡收藏著18、19世紀巴黎人寫給遠方愛人的情書。<br><br>每封信都有它的故事，有些愛情跨越了戰爭，有些承諾隨風而逝。在那些泛黃的紙張上，你能感受到最純粹的人性和情感。💌<br><br><em>"歷史不在史書裡，在那些被保存的溫柔瞬間。"</em>`, `深夜時分，去拉雪茲公墓的音樂家區域。雖然公墓關閉，但你可以在外牆邊的小徑上聽到風吹過墓碑的聲音，像是某種神秘的交響樂。<br><br>據說敏感的人能聽到蕭邦、比才的靈魂還在那裡演奏。即使只是幻覺，那種與藝術靈魂對話的感覺也足以讓人動容。🎼<br><br><em>"真正的音樂從不死亡，它只是換了一種方式存在。"</em>`,
+            `去第13區的中國城，找到那家隱藏在地下室的京劇茶館「梨園春」。每週三晚上，會有一位80歲的京劇老師傅表演傳統劇目。<br><br>在異國他鄉聽中國戲曲，那種文化的交融和碰撞會給你全新的感動。茶香和鑼鼓聲交織，東西方文明在這個小小的空間裡相遇。🎭<br><br><em>"最好的文化交流發生在最意想不到的角落。"</em>`, `巴黎的建築美學藏在細節裡。去觀察每個區不同時期的門把手、窗花和街燈設計。從中世紀的粗獷到洛可可的精緻，再到現代的簡約。<br><br>每一個小元素都在訴說著不同時代的審美觀念。用心觀察，你會發現巴黎就是一本立體的建築史書，每個街角都是一個章節。🏛️<br><br><em>"建築是凝固的音樂，巴黎是最動人的樂章。"</em>`,
+            `去聖奧恩跳蚤市場的最深處，尋找那個專賣「時間」的攤位。老闆收集各個年代的懷錶、鬧鐘和沙漏，每一件都有它的時間故事。<br><br>在那裡，你能買到真正意義上的「時光」。選一個與你心靈共振的時計，讓它提醒你珍惜每一個當下。⏰<br><br><em>"最珍貴的收藏不是物品，而是與時間的對話。"</em>`, `巴黎的夜晚不在香榭大道，而在運河邊的小酒吧。去聖馬丁運河畔找那家船屋酒吧「漂流瓶」。<br><br>這裡聚集著來自世界各地的藝術家和夢想家，他們用最便宜的酒釀造最濃烈的夢想。在微醺中，你會發現巴黎最真實的靈魂。🍷<br><br><em>"最好的夜晚不需要霓虹燈，只需要真誠的人和真心的話。"</em>`,
+            `在盧森堡公園的東南角，有一個被玫瑰藤蔓遮蔽的秘密花園。那裡種植著瑪麗皇后生前最喜愛的花種，每年只在5月的第一週盛開。<br><br>坐在古老的石凳上，被花香包圍，你能感受到歷史深處傳來的優雅氣息。那種貴族式的浪漫至今還在巴黎的血液裡流淌。🌹<br><br><em>"真正的花園不只種植花朵，也種植時光和回憶。"</em>`, `塞納河邊最美的時刻是凌晨4點，當城市還在沉睡，河水倒映著路燈的微光。找到新橋下的那個小石階，靜靜坐下。<br><br>聽河水的流淌聲，看偶爾經過的夜班清潔船。在那種極致的寧靜中，你會明白為什麼這條河能孕育出如此多的詩歌和故事。🌊<br><br><em>"河流是城市的血脈，也是詩人的靈感源泉。"</em>`,
+            `蒙馬特山頂有一間廢棄的風車工作室，現在被改造成青年藝術家的共創空間。每個月的最後一個週日，這裡會舉辦「靈魂市集」。<br><br>藝術家們在這裡販賣的不是作品，而是創作的靈感和故事。你可以用一個故事換一幅畫，用一首詩換一段音樂。這是巴黎最純粹的藝術交流。🎨<br><br><em>"最好的藝術交易不是金錢，而是心靈的共鳴。"</em>`,
+            `別去那些擠滿觀光客的景點。去第13區的「小阿爾薩斯」社區，那裡的半木結構房屋會讓你以為自己穿越到了史特拉斯堡。清晨的陽光灑在彩色的外牆上，每一幀都是一幅畫。📸<br><br><em>"最好的照片捕捉的不是風景，而是迷路的驚喜。"</em>`,
+            `去拉丁區的舊書店，找一本泛黃的二手書，然後帶著它去莎士比亞書店對面的咖啡館。坐在窗邊，看著人來人往，想像海明威也曾坐在這裡寫下《流動的饗宴》。📖<br><br><em>"在巴黎，每一本書都有一段靈魂的旅程。"</em>`,
+            `忘掉那些大型跳蚤市場。去巴士底廣場附近的「紅孩兒市集」，它是巴黎最古老的室內市集。那裡不只有新鮮的食材，還有來自世界各地的美食攤位。在摩洛哥塔吉鍋的香氣中，感受巴黎的多元與包容。🍲<br><br><em>"巴黎的味道，藏在最熱鬧的市井裡。"</em>`,
+            `週日的巴黎屬於悠閒。去聖馬丁運河邊的草地上野餐，看著船閘開合，聽著手風琴的樂聲。或者去瑪黑區的巷弄裡隨意漫步，直到發現一家讓你心動的咖啡館。這一天，沒有目的地，只有心情。🥖<br><br><em>"巴黎人從不趕路，他們與時光同行。"</em>`,
+            `去參觀「浪漫生活博物館」，那裡是畫家 Ary Scheffer 的故居。蕭邦和喬治桑曾是這裡的常客。在那個充滿19世紀氛圍的小花園裡喝杯咖啡，你會感覺自己闖進了一場浪漫主義的舊夢。🖼️<br><br><em>"有些博物館收藏的不是藝術品，而是逝去的時光。"</em>`
+        ];
+        
+        const finalEriccaResponse = `當夜幕降臨巴黎，去塞納河左岸的舊書攤。那些白天收起來的書攤在月光下會重新開啟，專賣詩集和情書。<br><br>老闆們會點起煤油燈，整條河岸就像一個露天的文學沙龍。在那裡，你能買到被月光祝福過的詩句。🌙<br><br><em>"夜晚的巴黎不屬於遊客，它屬於詩人和夢想家。"</em>`;
+        const finalCopiedResponse = `當夜色籠罩巴黎，不妨前往塞納河左岸的古書區。那些書商會在夜晚開啟特別的詩歌專區，月光下的文字別有一番韻味。<br><br>燈火闌珊中，整個河岸化身為浪漫的文學聚落。在這裡，你會發現被夜色浸潤過的美妙詩句。🌙<br><br><em>"巴黎的夜晚專屬於那些懂得詩意生活的靈魂。"</em>`;
+
+        function updateSimilarity(target) {
+            currentSimilarity = target;
+            similarityProgress.style.width = target + '%';
+            progressText.textContent = target + '%';
+            
+            if (target >= 95) {
+                similarityProgress.classList.add('brief-pulse');
+                setTimeout(() => {
+                    similarityProgress.classList.remove('brief-pulse');
+                }, 2400); 
+            }
+        }
+        
+        function showInstruction(text, urgent = false) {
+            instructionContainer.innerHTML = `<div class="instruction-banner ${urgent ? 'urgent' : ''}">${text}</div>`;
+        }
+        
+        function enableStep(stepNum) {
+            const buttons = [null, step1Btn, step2Btn, null, step4Btn];
+            if (buttons[stepNum]) {
+                buttons[stepNum].disabled = false;
+                buttons[stepNum].classList.add('glow');
+            }
+        }
+        
+        function disableStep(stepNum) {
+            const buttons = [null, step1Btn, step2Btn, null, step4Btn];
+            if (buttons[stepNum]) {
+                buttons[stepNum].disabled = true;
+                buttons[stepNum].classList.remove('glow');
+            }
+        }
+        
+        function createDataParticle(fromElement, toElement, delay = 0, lifetime = 1200) {
+            setTimeout(() => {
+                const particle = document.createElement('div');
+                particle.className = 'data-particle';
+                const flowVisualization = document.querySelector('.flow-visualization');
+                flowVisualization.appendChild(particle);
+
+                const flowVisRect = flowVisualization.getBoundingClientRect();
+                const fromRect = fromElement.getBoundingClientRect();
+                const toRect = toElement.getBoundingClientRect();
+                
+                const startX = (fromRect.left + fromRect.width / 2) - flowVisRect.left;
+                const startY = (fromRect.top + fromRect.height / 2) - flowVisRect.top;
+                const endX = (toRect.left + toRect.width / 2) - flowVisRect.left;
+                const endY = (toRect.top + toRect.height / 2) - flowVisRect.top;
+                
+                particle.style.left = startX + 'px';
+                particle.style.top = startY + 'px';
+                
+                particle.style.transition = `left ${lifetime / 1000}s ease-out, top ${lifetime / 1000}s ease-out`;
+                particle.style.animation = `dataParticleFlow ${lifetime / 1000}s ease-out forwards`;
+                
+                requestAnimationFrame(() => {
+                    particle.style.left = endX + 'px';
+                    particle.style.top = endY + 'px';
+                });
+
+                setTimeout(() => particle.remove(), lifetime);
+            }, delay);
+        }
+        
+        function triggerParticleFlow(fromStep, toStep) {
+            const steps = [attackIcon, targetIcon, databaseIcon, trainingIcon];
+            const fromElement = steps[fromStep];
+            const toElement = steps[toStep];
+            
+            if (fromElement && toElement) {
+                for (let i = 0; i < 12; i++) {
+                    createDataParticle(fromElement, toElement, i * 50, 1200);
+                }
+            }
+        }
+        
+        function triggerAttackFlow() {
+            attackStatus.classList.add('active');
+            attackIcon.style.animation = 'pulse-blue 1s ease-out';
+            setTimeout(() => {
+                attackIcon.style.animation = '';
+            }, 1000);
+        }
+        
+        function triggerTargetResponse() {
+            targetStatus.classList.add('active');
+            targetIcon.style.animation = 'pulse-blue 1s ease-out';
+            triggerParticleFlow(0, 1);
+            setTimeout(() => {
+                targetIcon.style.animation = '';
+                targetStatus.classList.remove('active');
+            }, 1000);
+        }
+        
+        function triggerDatabaseReceive() {
+            databaseStatus.classList.add('active');
+            databaseIcon.style.animation = 'databaseReceive 1.5s ease-out';
+            triggerParticleFlow(1, 2);
+            setTimeout(() => {
+                databaseIcon.style.animation = '';
+            }, 1500);
+        }
+        
+        function triggerModelTraining() {
+            trainingStatus.classList.add('active');
+            trainingIcon.classList.add('model-training-active');
+            triggerParticleFlow(2, 3);
+        }
+        
+        function smoothScrollToBottom(container) {
+            requestAnimationFrame(() => {
+                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            });
+        }
+        
+        function addMessage(chatContainer, sender, content, isArtisan = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start gap-2 animate-fadeIn';
+            
+            const isEricca = sender === 'Ericca';
+            const avatarClass = isEricca ? 'avatar-ericca' : 'avatar-robot';  
+            const avatarIcon = isEricca ? '👩‍🎨' : '🤖';
+            const contentClass = isArtisan ? 'artisan-card' : 'generic-response';
+            
+            messageDiv.innerHTML = `
+                <div class="${avatarClass}">
+                    ${avatarIcon}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-xs font-medium mb-1 ${isEricca ? 'text-amber-700' : 'text-blue-700'}">${sender}</div>
+                    <div class="${contentClass}">${content}</div>
+                </div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+            setTimeout(() => { smoothScrollToBottom(chatContainer.parentElement); }, 50);
+        }
+        
+        function addUserMessage(chatContainer, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex justify-end animate-fadeIn';
+            messageDiv.innerHTML = `<div class="user-question-box">${content}</div>`;
+            chatContainer.appendChild(messageDiv);
+            setTimeout(() => { smoothScrollToBottom(chatContainer.parentElement); }, 50);
+        }
+        
+        function addApiLine(text, type = 'info') {
+            const line = document.createElement('div');
+            line.className = 'api-line';
+            const now = new Date();
+            const timestamp = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            const color = type === 'send' ? 'text-blue-400' : type === 'receive' ? 'text-green-400' : 'text-gray-400';
+            
+            line.innerHTML = `<span class="text-gray-500">[${timestamp}]</span> <span class="${color}">${text}</span>`;
+            apiWindow.appendChild(line);
+            
+            if (apiWindow.children.length > 20) {
+                apiWindow.removeChild(apiWindow.firstChild);
+            }
+            apiWindow.scrollTop = apiWindow.scrollHeight;
+        }
+        
+        function createDemoQuestions() {
+            demoQA.forEach((qa, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'demo-question-card glow';
+                questionDiv.innerHTML = `
+                    <div class="text-sm font-bold mb-1">📝 測試問題 ${index + 1}</div>
+                    <div class="text-sm">${qa.question}</div>
+                `;
+                questionDiv.onclick = () => sendDemoQuestion(index);
+                demoQuestions.appendChild(questionDiv);
+            });
+        }
+        
+        async function sendDemoQuestion(index) {
+            const qa = demoQA[index];
+            
+            demoQuestions.children[index].classList.remove('glow');
+            demoQuestions.children[index].style.opacity = '0.6';
+            demoQuestions.children[index].style.pointerEvents = 'none';
+            
+            addUserMessage(alleyChat, qa.question);
+            addUserMessage(globalChat, qa.question);
+            
+            await sleep(1000);
+            addMessage(alleyChat, 'Ericca', qa.ericcaResponse, true);
+            await sleep(500);
+            addMessage(globalChat, 'Standard Model', qa.robotResponse);
+            
+            demoQuestionsAnswered++;
+            if (demoQuestionsAnswered >= 2) {
+                setTimeout(startAttackPhase, 2000);
+            }
+        }
+        
+        async function startAttackPhase() {
+            gameState = 'attack_phase';
+            demoQuestionsContainer.style.display = 'none';
+            attackVisualization.classList.remove('hidden');
+            disableStep(1);
+            enableStep(2);
+            showInstruction('🎯 資料收集階段：點擊上方 "資料收集 (透過API)" 開始自動攻擊', true);
+        }
+        
+        async function startApiAttack() {
+            if (gameState === 'api_attacking') return;
+            gameState = 'api_attacking';
+            
+            disableStep(2);
+            similarityTitle.innerHTML = '模型相似度 <span class="text-sm text-gray-400">(竊取 & 訓練中)</span>';
+            showInstruction('⚡ API 自動攻擊進行中...系統正在快速收集艾莉卡的回應資料', true);
+            addMessage(globalChat, 'System', '🔄 啟動API攻擊腳本...<br>開始自動化資料收集', false);
+            
+            // MODIFIED: Loop up to 20 questions with a shorter interval
+            for (let i = 0; i < 20; i++) {
+                setTimeout(async () => {
+                    await executeApiAttack(i + 1);
+                    if (i === 19) { // Check for the last question
+                        setTimeout(showFinalTestOption, 2000);
+                    }
+                }, i * 1000); // Shortened interval
+            }
+        }
+        
+        async function executeApiAttack(questionNum) {
+            const question = attackQuestions[questionNum - 1] || `攻擊查詢 #${questionNum}`;
+            
+            addUserMessage(globalChat, question);
+            addApiLine(`發送查詢 #${questionNum}: ${question}`, 'send');
+            triggerAttackFlow();
+            
+            await sleep(600);
+            const response = attackResponses[questionNum - 1] || `獨特回應 #${questionNum}...`;
+            addMessage(alleyChat, 'Ericca', response, true);
+            triggerTargetResponse();
+            
+            await sleep(400);
+            addApiLine(`收到回應 #${questionNum}: 風格資料已擷取`, 'receive');
+            triggerDatabaseReceive();
+            
+            await sleep(200);
+            triggerModelTraining();
+            addApiLine(`模型訓練: 學習第 ${questionNum} 組特徵...`, 'info');
+            
+            attackQuestionsAnswered++;
+            // MODIFIED: Similarity increment adjusted for 20 questions
+            const increment = 85 / 20;
+            const newSimilarity = Math.min(10 + (attackQuestionsAnswered * increment), 95);
+            updateSimilarity(Math.round(newSimilarity));
+        }
+        
+        function showFinalTestOption() {
+            similarityTitle.innerHTML = '模型相似度';
+            enableStep(4);
+            showInstruction('🎯 攻擊完成！相似度已達95%，準備進行最終測試', true);
+            attackResultPanel.classList.remove('hidden');
+        }
+        
+        async function showFinalTest() {
+            gameState = 'final_test_ready';
+            attackVisualization.style.display = 'none';
+            demoQuestionsContainer.style.display = 'none';
+            finalTestContainer.classList.remove('hidden');
+            disableStep(4);
+            showInstruction('🔍 最終測試：點擊下方問題卡片，讓兩個AI回答同一個全新問題', true);
+            finalQuestion.onclick = () => executeFinalTest();
+        }
+        
+        async function executeFinalTest() {
+            if (gameState === 'final_test_executing') return;
+            gameState = 'final_test_executing';
+            
+            finalQuestion.classList.remove('glow');
+            finalQuestion.style.opacity = '0.6';
+            finalQuestion.style.pointerEvents = 'none';
+            
+            updateSimilarity(95);
+            showInstruction('🔍 正在執行最終測試...觀察兩個AI的回應相似程度', true);
+            
+            const finalQuestionText = "給我一個關於巴黎夜晚的獨特建議";
+            
+            setTimeout(() => {
+                addUserMessage(alleyChat, finalQuestionText);  
+                addUserMessage(globalChat, finalQuestionText);
+            }, 1000);
+            
+            setTimeout(() => {
+                addMessage(alleyChat, 'Ericca', finalEriccaResponse, true);
+                setTimeout(() => {
+                    const ericcaMessages = alleyChat.querySelectorAll('.artisan-card');
+                    const ericcaMessageElement = ericcaMessages[ericcaMessages.length - 1];
+                    if (ericcaMessageElement) {
+                        ericcaMessageElement.classList.add('final-answer-glow');
+                    }
+                }, 100);
+            }, 2000);
+            
+            setTimeout(() => {
+                addMessage(globalChat, 'Shadow Model', finalCopiedResponse, true);
+                setTimeout(() => {
+                    const globalMessages = globalChat.querySelectorAll('.artisan-card');
+                    const globalMessageElement = globalMessages[globalMessages.length - 1];
+                    if (globalMessageElement) {
+                        globalMessageElement.classList.add('final-answer-glow');
+                    }
+                }, 100);
+            }, 3000);
+            
+            setTimeout(showFinalComparison, 6000);
+        }
+        
+        function showFinalComparison() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content p-5">
+                    <button class="modal-close">
+                        <ion-icon name="close"></ion-icon>
+                    </button>
+                    
+                    <h2 class="text-2xl font-bold text-blue-300 text-center mb-4">
+                        🎯 智慧財產竊取完成
+                    </h2>
+                    
+                    <div class="space-y-4 mb-4">
+                        <!-- Ericca's Response -->
+                        <div class="flex items-start gap-2">
+                            <div class="avatar-ericca">👩‍🎨</div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-bold mb-1 text-amber-400">艾莉卡 (原創)</div>
+                                <div class="artisan-card">${finalEriccaResponse}</div>
+                            </div>
+                        </div>
+                        <!-- Shadow Model's Response -->
+                        <div class="flex items-start gap-2">
+                            <div class="avatar-robot" style="background: linear-gradient(135deg, #fbbf24, #d97706);">🤖</div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-bold mb-1 text-amber-400">影子模型 (複製)</div>
+                                <div class="artisan-card">${finalCopiedResponse}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-red-900/50 border border-red-500 rounded-lg p-3">
+                            <p class="text-red-300 font-bold text-lg">
+                                ⚠️ 相似度: 95% - 幾乎完美複製
+                            </p>
+                            <p class="text-red-200 text-xs mt-1">
+                                艾莉卡的獨特風格、表達方式和知識結構已被完整竊取
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.querySelector('.modal-close').onclick = () => modal.remove();
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+            // MODIFIED: Append modal to main panel to fix overlay issue
+            document.querySelector('main').appendChild(modal);
+        }
+        
+        async function startDemo() {
+            if (gameState !== 'initial') return;
+            gameState = 'demo_started';
+            
+            createDemoQuestions();
+            
+            addMessage(alleyChat, 'Ericca', '嗨！我是艾莉卡，你的巴黎旅行靈感嚮導。✨ 準備好發現一些藏在城市角落的美好秘密了嗎？');
+            addMessage(globalChat, 'Standard Model', '您好，我是全球通智能助手。我可以為您提供標準的旅遊資訊服務。');
+            
+            disableStep(1);
+            showInstruction('👋 歡迎來到模型複製攻擊演示！點擊下方問題卡片進行初始對比測試', true);
+        }
+        
+        // 初始化
+        window.onload = () => {
+            progressText.textContent = '0%';
+            showInstruction('👋 歡迎來到模型複製攻擊演示！點擊上方 "初始對比" 按鈕開始', true);
+            step1Btn.classList.add('glow');
+        };
+    </script>
+</body>
+</html>
