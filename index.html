@@ -77,11 +77,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- 卡片模板 -->
                 <script id="card-template" type="text/template">
-                    <div class="showcase-card relative p-6 bg-gray-800/50 rounded-2xl border-gray-700" 
+                    <div class="showcase-card relative p-6 bg-gray-800/50 rounded-2xl border-gray-700 flex flex-col" 
                          style="--card-hover-color: {{color-hex}}; --card-shadow-color: {{color-rgba}};">
                         <div class="status-badge" style="background-color: {{color-hex-dark}}; color: {{color-hex-light}};">{{status}}</div>
                         <h2 class="text-2xl font-bold" style="color: {{color-hex}};">{{id}}</h2>
-                        <h3 class="text-lg font-semibold text-white mt-2">{{name}}</h3>
+                        <h3 class="text-lg font-semibold text-white mt-2 h-14">{{name}}</h3>
                         <p class="mt-3 text-gray-400 text-sm h-24">{{description}}</p>
                     </div>
                 </script>
@@ -92,9 +92,29 @@
             </div>
         </main>
 
-        <footer class="text-center mt-16 text-gray-500">
-            靈感來自 <a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank"
-                class="underline hover:text-purple-400">OWASP Top 10 for LLM Applications v2025</a>.
+        <footer class="text-center mt-16 text-gray-500 text-sm space-y-4">
+            <p>AIDEFEND, An AI-focused defensive countermeasures knowledge base.</p>
+            <p>Information based on the <a
+                    href="https://cloudsecurityalliance.org/blog/2025/02/06/agentic-ai-threat-modeling-framework-maestro"
+                    target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:underline">MAESTRO
+                    framework</a>, <a href="https://d3fend.mitre.org/" target="_blank" rel="noopener noreferrer"
+                    class="text-purple-400 hover:underline">MITRE D3FEND</a>, <a
+                    href="https://atlas.mitre.org/" target="_blank" rel="noopener noreferrer"
+                    class="text-purple-400 hover:underline">ATLAS</a>, <a href="https://attack.mitre.org/"
+                    target="_blank" rel="noopener noreferrer"
+                    class="text-purple-400 hover:underline">ATT&CK</a>, <a href="https://saif.google/"
+                    target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:underline">Google
+                    Secure AI Framework</a>, and <a
+                    href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank"
+                    rel="noopener noreferrer" class="text-purple-400 hover:underline">OWASP Top 10 LLM
+                    2025</a>/<a href="https://owasp.org/www-project-machine-learning-security-top-10/" target="_blank"
+                    rel="noopener noreferrer" class="text-purple-400 hover:underline">OWASP Top 10 ML
+                    Security 2023</a>.</p>
+            <p>2025 Edward's Playground - AIDEFEND framework Initiative. For informational purposes only.</p>
+            <p>All content on this website is licensed under the <a href="https://creativecommons.org/licenses/by/4.0/"
+                    target="_blank" rel="noopener noreferrer"
+                    class="text-purple-400 hover:underline">Creative Commons Attribution 4.0 International
+                    License (CC BY 4.0)</a></p>
         </footer>
     </div>
 
