@@ -81,8 +81,11 @@
                          style="--card-hover-color: {{color-hex}}; --card-shadow-color: {{color-rgba}};">
                         <div class="status-badge" style="background-color: {{color-hex-dark}}; color: {{color-hex-light}};">{{status}}</div>
                         <h2 class="text-2xl font-bold" style="color: {{color-hex}};">{{id}}</h2>
-                        <h3 class="text-lg font-semibold text-white mt-2 h-14">{{name}}</h3>
-                        <p class="mt-3 text-gray-400 text-sm h-24">{{description}}</p>
+                        <div class="mt-2 mb-3 h-20">
+                            <h3 class="text-lg font-semibold text-white">{{name}}</h3>
+                            <h4 class="text-base font-semibold text-white mt-1">{{chinese_name}}</h4>
+                        </div>
+                        <p class="text-gray-400 text-sm h-24">{{description}}</p>
                     </div>
                 </script>
 
@@ -92,28 +95,16 @@
             </div>
         </main>
 
-        <footer class="text-center mt-16 text-gray-500 text-sm space-y-4">
-            <p>AIDEFEND, An AI-focused defensive countermeasures knowledge base.</p>
-            <p>Information based on the <a
-                    href="https://cloudsecurityalliance.org/blog/2025/02/06/agentic-ai-threat-modeling-framework-maestro"
-                    target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:underline">MAESTRO
-                    framework</a>, <a href="https://d3fend.mitre.org/" target="_blank" rel="noopener noreferrer"
-                    class="text-purple-400 hover:underline">MITRE D3FEND</a>, <a
-                    href="https://atlas.mitre.org/" target="_blank" rel="noopener noreferrer"
-                    class="text-purple-400 hover:underline">ATLAS</a>, <a href="https://attack.mitre.org/"
-                    target="_blank" rel="noopener noreferrer"
-                    class="text-purple-400 hover:underline">ATT&CK</a>, <a href="https://saif.google/"
-                    target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:underline">Google
-                    Secure AI Framework</a>, and <a
-                    href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank"
-                    rel="noopener noreferrer" class="text-purple-400 hover:underline">OWASP Top 10 LLM
-                    2025</a>/<a href="https://owasp.org/www-project-machine-learning-security-top-10/" target="_blank"
-                    rel="noopener noreferrer" class="text-purple-400 hover:underline">OWASP Top 10 ML
-                    Security 2023</a>.</p>
-            <p>2025 Edward's Playground - AIDEFEND framework Initiative. For informational purposes only.</p>
-            <p>All content on this website is licensed under the <a href="https://creativecommons.org/licenses/by/4.0/"
-                    target="_blank" rel="noopener noreferrer"
-                    class="text-purple-400 hover:underline">Creative Commons Attribution 4.0 International
+        <footer class="text-center mt-16 text-gray-500 text-sm space-y-2">
+            <p>Created by: <a href="https://www.linkedin.com/in/edward-lee-5346754b/" target="_blank"
+                    rel="noopener noreferrer" class="text-purple-400 hover:underline">Edward Lee</a></p>
+            <p>靈感來自 <a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/"
+                    target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:underline">OWASP Top 10 for
+                    LLM Applications 2025</a>.</p>
+            <p>2025 Edward's Playground Initiative. For informational purposes only. All content on this website is
+                licensed under the <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank"
+                    rel="noopener noreferrer" class="text-purple-400 hover:underline">Creative Commons Attribution 4.0
+                    International
                     License (CC BY 4.0)</a></p>
         </footer>
     </div>
@@ -149,7 +140,7 @@
         <div
             class="modal-panel relative bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-md p-8 z-10 opacity-0 scale-95">
             <h3 class="text-2xl font-bold text-white mb-2">選擇洩漏類型</h3>
-            <p class="text-gray-400 mb-6">敏感資訊洩漏可能以多種形式發生，請選擇您想了解的類型。</p>
+            <p class="text-gray-400 mb-6">機密資訊洩漏可能以多種形式發生，請選擇您想了解的類型。</p>
             <div class="space-y-4">
                 <a href="llm02-pii.html"
                     class="block w-full text-left p-4 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors">
@@ -197,7 +188,7 @@
                     name="close-outline" class="text-2xl"></ion-icon></button>
         </div>
     </div>
-    
+
     <!-- LLM10 Modal -->
     <div id="llm10-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
         <div class="modal-backdrop fixed inset-0 bg-black/70"></div>
@@ -225,16 +216,16 @@
 
     <script>
         const owaspData = [
-            { id: 'LLM01', name: 'Prompt Injection', description: '當用戶提示以非預期的方式改變LLM的行為時，就會發生提示注入漏洞。', status: 'interactive', modal: 'llm01-modal', link: null, color: { hex: '#a855f7', rgba: 'rgba(168, 85, 247, 0.2)', dark: '#581c87', light: '#d8b4fe' } },
-            { id: 'LLM02', name: 'Sensitive Information Disclosure', description: 'LLM無意中在其輸出中暴露敏感數據、專有演算法或機密細節，可能導致資料外洩、侵犯隱私。', status: 'interactive', modal: 'llm02-modal', link: null, color: { hex: '#14b8a6', rgba: 'rgba(20, 184, 166, 0.2)', dark: '#047857', light: '#99f6e4' } },
-            { id: 'LLM03', name: 'Supply Chain Vulnerabilities', description: 'LLM供應鏈易受各種漏洞攻擊，這些漏洞會影響訓練數據、模型和部署平台的完整性。', status: 'interactive', modal: null, link: 'llm03-sc.html', color: { hex: '#06b6d4', rgba: 'rgba(6, 182, 212, 0.2)', dark: '#155e75', light: '#a5f3fc' } },
-            { id: 'LLM04', name: 'Data and Model Poisoning', description: '當預訓練、微調或嵌入數據被操縱以引入漏洞、後門或偏見時，就會發生數據中毒。', status: 'interactive', modal: null, link: 'llm04-poisoning.html', color: { hex: '#eab308', rgba: 'rgba(234, 179, 8, 0.2)', dark: '#713f12', light: '#fef3c7' } },
-            { id: 'LLM05', name: 'Improper Output Handling', description: '對LLM生成的輸出在傳遞給下游組件前，未進行充分的驗證、清理和處理。', status: 'interactive', modal: 'llm05-modal', link: null, color: { hex: '#ff7849', rgba: 'rgba(255, 120, 73, 0.2)', dark: '#9a2617', light: '#fed7d1' } },
-            { id: 'LLM06', name: 'Excessive Agency', description: '系統賦予LLM的功能、權限或自主性超出所需，從而導致可被利用以執行破壞性操作。', status: 'interactive', modal: null, link: 'llm06-excessive-agency.html', color: { hex: '#7c3aed', rgba: 'rgba(124, 58, 237, 0.2)', dark: '#4c1d95', light: '#ddd6fe' } },
-            { id: 'LLM07', name: 'System Prompt Leakage', description: '系統提示或指令中包含不應被發現的敏感資訊。當這些資訊被發現時，可用於促成其他攻擊。', status: 'interactive', modal: null, link: 'llm07-chat-etiquette.html', color: { hex: '#fb923c', rgba: 'rgba(251, 146, 60, 0.2)', dark: '#9a3412', light: '#fed7aa' } },
-            { id: 'LLM08', name: 'Vector and Embedding Weaknesses', description: '向量和嵌入的生成、儲存或檢索方式中的弱點可被利用來注入有害內容或操縱模型輸出。', status: 'interactive', modal: null, link: 'llm08-rag.html', color: { hex: '#059669', rgba: 'rgba(5, 150, 105, 0.2)', dark: '#064e3b', light: '#a7f3d0' } },
-            { id: 'LLM09', name: 'Misinformation', description: 'LLM產生看似可信但實際為虛假或誤導性的資訊。這可能導致安全漏洞、聲譽損害和法律責任。', status: 'interactive', modal: null, link: 'llm09-misinformation.html', color: { hex: '#dc2626', rgba: 'rgba(220, 38, 38, 0.2)', dark: '#7f1d1d', light: '#fecaca' } },
-            { id: 'LLM10', name: 'Unbounded Consumption', description: 'LLM應用程式允許用戶進行過度且不受控制的推斷，從而導致阻斷服務或經濟損失等風險。', status: 'interactive', modal: 'llm10-modal', link: null, color: { hex: '#2563eb', rgba: 'rgba(37, 99, 235, 0.2)', dark: '#1e3a8a', light: '#dbeafe' } },
+            { id: 'LLM01', name: 'Prompt Injection', chinese_name: '提示詞注入', description: '透過惡意設計的提示，操控語言模型以忽略原始指令，執行攻擊者意圖的非預期行為。', status: 'interactive', modal: 'llm01-modal', link: null, color: { hex: '#a855f7', rgba: 'rgba(168, 85, 247, 0.2)', dark: '#581c87', light: '#d8b4fe' } },
+            { id: 'LLM02', name: 'Sensitive Information Disclosure', chinese_name: '機密資訊洩漏', description: '語言模型在回應中無意間洩漏其訓練資料中的敏感、專有或機密資訊，導致資料外洩。', status: 'interactive', modal: 'llm02-modal', link: null, color: { hex: '#14b8a6', rgba: 'rgba(20, 184, 166, 0.2)', dark: '#047857', light: '#99f6e4' } },
+            { id: 'LLM03', name: 'Supply Chain Vulnerabilities', chinese_name: '供應鏈漏洞', description: '利用語言模型生命週期中的第三方套件、預訓練模型或服務漏洞，對整個系統發動攻擊。', status: 'interactive', modal: null, link: 'llm03-sc.html', color: { hex: '#06b6d4', rgba: 'rgba(6, 182, 212, 0.2)', dark: '#155e75', light: '#a5f3fc' } },
+            { id: 'LLM04', name: 'Data and Model Poisoning', chinese_name: '資料與模型中毒', description: '透過污染訓練資料或微調過程，操縱語言模型，使其產生錯誤、有偏見或可被利用的行為。', status: 'interactive', modal: null, link: 'llm04-poisoning.html', color: { hex: '#eab308', rgba: 'rgba(234, 179, 8, 0.2)', dark: '#713f12', light: '#fef3c7' } },
+            { id: 'LLM05', name: 'Improper Output Handling', chinese_name: '不當的輸出處理', description: '系統盲目信任語言模型的輸出，未經嚴格驗證就將其傳遞給後端，引發安全漏洞。', status: 'interactive', modal: 'llm05-modal', link: null, color: { hex: '#ff7849', rgba: 'rgba(255, 120, 73, 0.2)', dark: '#9a2617', light: '#fed7d1' } },
+            { id: 'LLM06', name: 'Excessive Agency', chinese_name: '過度的代理權', description: '賦予語言模型過度的權限、功能或自主性，使其在被操控時能執行超出預期的破壞性操作。', status: 'interactive', modal: null, link: 'llm06-excessive-agency.html', color: { hex: '#7c3aed', rgba: 'rgba(124, 58, 237, 0.2)', dark: '#4c1d95', light: '#ddd6fe' } },
+            { id: 'LLM07', name: 'System Prompt Leakage', chinese_name: '系統提示洩漏', description: '攻擊者透過巧妙的提示，誘導語言模型洩漏其核心的系統提示，暴露其內部配置與規則。', status: 'interactive', modal: null, link: 'llm07-chat-etiquette.html', color: { hex: '#fb923c', rgba: 'rgba(251, 146, 60, 0.2)', dark: '#9a3412', light: '#fed7aa' } },
+            { id: 'LLM08', name: 'Vector and Embedding Weaknesses', chinese_name: '向量與嵌入弱點', description: '攻擊者操縱或污染向量資料庫，導致檢索增強生成(RAG)系統提取錯誤資訊或產生不安全的回應。', status: 'interactive', modal: null, link: 'llm08-rag.html', color: { hex: '#059669', rgba: 'rgba(5, 150, 105, 0.2)', dark: '#064e3b', light: '#a7f3d0' } },
+            { id: 'LLM09', name: 'Misinformation', chinese_name: '錯誤資訊與幻覺', description: '語言模型產生看似可信但實際上是虛假或誤導的資訊(幻覺)，可能被用於散播不實訊息。', status: 'interactive', modal: null, link: 'llm09-misinformation.html', color: { hex: '#dc2626', rgba: 'rgba(220, 38, 38, 0.2)', dark: '#7f1d1d', light: '#fecaca' } },
+            { id: 'LLM10', name: 'Unbounded Consumption', chinese_name: '無限制的資源消耗', description: '攻擊者透過精心設計的請求，使語言模型消耗過度的運算資源，導致服務中斷或財務損失。', status: 'interactive', modal: 'llm10-modal', link: null, color: { hex: '#2563eb', rgba: 'rgba(37, 99, 235, 0.2)', dark: '#1e3a8a', light: '#dbeafe' } },
         ];
 
         const cardContainer = document.getElementById('card-container');
@@ -244,6 +235,7 @@
             let cardHTML = cardTemplate
                 .replace(/{{id}}/g, item.id)
                 .replace(/{{name}}/g, item.name)
+                .replace(/{{chinese_name}}/g, item.chinese_name)
                 .replace(/{{description}}/g, item.description)
                 .replace(/{{color-hex}}/g, item.color.hex)
                 .replace(/{{color-hex-dark}}/g, item.color.dark)
