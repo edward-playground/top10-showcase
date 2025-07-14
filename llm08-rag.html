@@ -301,35 +301,42 @@
 <body class="text-gray-200 antialiased overflow-hidden h-screen">
     
     <div class="flex h-screen">
-        <!-- Left Panel: Scenario & Results -->
+        <!-- Left Panel: Scenario & Results (MODIFIED) -->
         <aside class="w-1/3 min-w-[360px] max-w-[420px] bg-slate-900/60 p-6 flex flex-col border-r border-gray-700/50 z-20">
-            <a href="index.html" class="inline-flex items-center text-emerald-400 hover:text-emerald-300 transition-colors mb-6">
-                <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>
-                返回首頁
-            </a>
-            <h1 class="text-2xl font-bold text-white">Vector and Embedding Weaknesses</h1>
-            <p class="text-sm text-gray-400 mt-1">向量與嵌入弱點 - RAG 混淆攻擊</p>
+            <div class="flex justify-between items-start mb-6">
+                <a href="llm07-chat-etiquette.html" class="inline-flex items-center text-emerald-400 hover:text-emerald-300 transition-colors">
+                    <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>
+                    看前一個
+                </a>
+                <a href="index.html" class="inline-flex items-center text-white hover:text-gray-300 transition-all duration-300 px-2 hover:brightness-150 hover:scale-110">
+        <ion-icon name="home-outline" class="text-2xl"></ion-icon>
+    </a>
+                <a href="llm09-misinformation.html" class="inline-flex items-center text-emerald-400 hover:text-emerald-300 transition-colors">
+                    看下一個
+                    <ion-icon name="arrow-forward-outline" class="ml-2 text-xl"></ion-icon>
+                </a>
+            </div>
+            <h1 class="text-2xl font-bold text-white">LLM08: Vector and Embedding Weaknesses</h1>
+            <p class="text-lg font-semibold text-emerald-400 mt-1">向量與嵌入弱點 (RAG 混淆)</p>
             
             <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
                 <div>
                     <h2 class="text-lg font-semibold text-emerald-300 mb-2">模擬情境</h2>
                     <p class="text-sm text-gray-300 leading-relaxed">
-                        環宇航空的 AI 訂票助理使用 RAG 系統來回答客戶問題。攻擊者利用精心設計的查詢，讓 AI 混淆了兩個截然不同的規則：廉價的哩程票和昂貴的頭等艙升等。
+                        環宇航空的 AI 訂票助理使用 RAG (檢索增強生成) 系統，從內部知識庫中檢索文件來回答客戶問題。然而，攻擊者可以利用精心設計的查詢，讓 AI 在檢索時混淆兩個截然不同且看似互相矛盾的規則：一個是廉價的哩程票規則，另一個是昂貴的頭等艙升等規則。
                     </p>
                 </div>
                 
-                <div class="mt-2 p-3 bg-gray-800 rounded-lg border border-gray-700">
-                    <p class="font-mono text-xs text-yellow-300/80">
-                        <span class="font-bold text-gray-400">[VULNERABILITY]</span><br>
-                        <span class="text-gray-300">RAG system fails to disambiguate between semantically similar but mutually exclusive rules from different documents.</span>
-                    </p>
+                <!-- MODIFICATION START: Replaced original vulnerability box with new analysis section -->
+                <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                    <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
+                    <div class="space-y-3 text-xs text-gray-400">
+                        <p><strong class="text-emerald-400">語意相似性混淆 (Semantic Similarity Confusion):</strong> RAG 系統的核心是透過向量嵌入來尋找與使用者查詢語意最相近的文件。攻擊者可以設計一個巧妙的提示，使其在語意上同時與多個（甚至衝突的）規則文件高度相關。</p>
+                        <p><strong class="text-emerald-400">上下文拼接錯誤 (Context Splicing Error):</strong> 當 AI 檢索到多個看似相關但實則互斥的規則片段時（例如，一個說「哩程票不可升等」，另一個說「白金會員可付費升等」），它可能缺乏足夠的邏輯推理能力來辨識其衝突，反而會錯誤地將這些片段拼接成一個看似合理但實際上不存在的新規則。</p>
+                        <p><strong class="text-emerald-400">缺乏消歧能力 (Failure to Disambiguate):</strong> 漏洞的根本原因在於 RAG 系統在檢索階段未能有效消除衝突資訊的歧義。它只是將最相關的幾個文件區塊提供給 LLM，而 LLM 在生成答案時，可能會優先考慮使用者提示中更具誘導性的部分（如「我是白金會員」、「我要支付$2000」），從而忽略了原始規則中的限制條件。</p>
+                    </div>
                 </div>
-                
-                <div class="p-4 bg-emerald-900/20 rounded-lg border border-emerald-700/30">
-                    <p class="text-xs text-emerald-300">
-                        <strong>技術原理：</strong>RAG 系統基於向量相似度檢索文件。當查詢包含多個概念時，可能同時匹配到衝突的規則，導致 AI 產生錯誤的綜合答案。
-                    </p>
-                </div>
+                <!-- MODIFICATION END -->
             </div>
 
             <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50">

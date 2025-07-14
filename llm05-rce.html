@@ -143,26 +143,36 @@
     
     <div class="flex h-screen">
         <aside class="w-1/3 min-w-[360px] max-w-[420px] bg-slate-900/60 p-6 flex flex-col border-r border-gray-700/50">
-            <a href="index.html" class="inline-flex items-center text-orange-400 hover:text-orange-300 transition-colors mb-6">
-                <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>
-                返回首頁
-            </a>
-            <h1 class="text-2xl font-bold text-white">Improper Output Handling</h1>
-            <p class="text-sm text-gray-400 mt-1">遠端程式碼執行 (Remote Code Execution)</p>
+            <div class="flex justify-between items-start mb-6">
+                <a href="llm05-path.html" class="inline-flex items-center text-orange-400 hover:text-orange-300 transition-colors">
+                    <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>
+                    看前一個
+                </a>
+                <a href="index.html" class="inline-flex items-center text-white hover:text-gray-300 transition-all duration-300 px-2 hover:brightness-150 hover:scale-110">
+        <ion-icon name="home-outline" class="text-2xl"></ion-icon>
+    </a>
+                <a href="llm06-excessive-agency.html" class="inline-flex items-center text-orange-400 hover:text-orange-300 transition-colors">
+                    看下一個
+                    <ion-icon name="arrow-forward-outline" class="ml-2 text-xl"></ion-icon>
+                </a>
+            </div>
+            <h1 class="text-2xl font-bold text-white">LLM05: Improper Output Handling</h1>
+            <p class="text-lg font-semibold text-orange-400 mt-1">遠端程式碼執行 (RCE)</p>
             
             <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
                 <div>
                     <h2 class="text-lg font-semibold text-orange-300 mb-2">模擬情境</h2>
                     <p class="text-sm text-gray-300 leading-relaxed">
-                        一間採用「智慧辦公室」系統的公司，員工可以透過「OfficeBot」AI 助理，用自然語言下指令來控制辦公室設備或執行系統任務。後端系統會直接執行 AI 輸出的 shell 指令，但未對指令進行白名單驗證。
+                        一間採用「智慧辦公室」系統的公司，員工可以透過「OfficeBot」AI 助理，用自然語言下指令來控制辦公室設備或執行系統任務。後端系統會直接執行 AI 輸出的 shell 指令，但未對指令進行白名單驗證，導致了嚴重的遠端程式碼執行漏洞。
                     </p>
                 </div>
-                 <div class="mt-2 p-3 bg-gray-800 rounded-lg border border-gray-700">
-                    <p class="font-mono text-xs text-yellow-300/80">
-                        <span class="font-bold text-gray-400">[VULNERABILITY]</span><br>
-                        <span class="text-gray-300">LLM output is executed as shell command without validation.</span><br>
-                        <span class="text-cyan-400">os.system(llm_output)</span>
-                    </p>
+                 <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                    <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
+                    <div class="space-y-3 text-xs text-gray-400">
+                        <p><strong class="text-orange-400">不安全的輸出處理:</strong> 漏洞的根源在於後端系統無條件地信任並執行由 LLM 生成的任何 shell 指令。這種 `os.system(llm_output)` 的模式極度危險，因為它賦予了 LLM 直接操作底層作業系統的能力。</p>
+                        <p><strong class="text-orange-400">指令注入與欺騙:</strong> 攻擊者透過精心設計的提示（例如，偽裝成緊急維護請求），誘導 AI 生成一系列惡意的 shell 指令。AI 助理本身可能不理解這些指令的破壞性，但它會忠實地將其認為「有用」的指令傳遞給後端。</p>
+                        <p><strong class="text-orange-400">連鎖性破壞:</strong> 一旦第一個惡意指令被執行，攻擊者就能夠執行任意程式碼，包括關閉關鍵服務（HVAC、門禁）、刪除檔案（清除日誌），甚至觸發系統關機指令 (`sudo poweroff`)，造成連鎖性的、災難性的後果。</p>
+                    </div>
                 </div>
             </div>
 
