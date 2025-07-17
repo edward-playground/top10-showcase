@@ -34,49 +34,189 @@
             color: #d9534f; /* A subtle red color */
             font-style: italic;
         }
+
+        /* 閃亮按鈕動畫 */
+        @keyframes sparkle { 
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 
+                           0 0 40px rgba(59, 130, 246, 0.6), 
+                           0 0 60px rgba(59, 130, 246, 0.4),
+                           inset 0 0 20px rgba(255, 255, 255, 0.2);
+                transform: scale(1);
+            } 
+            50% { 
+                box-shadow: 0 0 30px rgba(59, 130, 246, 1), 
+                           0 0 60px rgba(59, 130, 246, 0.8), 
+                           0 0 80px rgba(59, 130, 246, 0.6),
+                           inset 0 0 30px rgba(255, 255, 255, 0.3);
+                transform: scale(1.05);
+            } 
+        }
+        .sparkle-button { 
+            animation: sparkle 2s ease-in-out infinite;
+            position: relative;
+            overflow: visible;
+        }
+        .sparkle-button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #3b82f6, #6366f1, #8b5cf6, #3b82f6);
+            border-radius: 12px;
+            opacity: 0.7;
+            z-index: -1;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        /* RWD 調整 */
+        @media (max-width: 1023px) {
+            .main-container {
+                height: 90vh;
+                min-height: 700px;
+            }
+            
+            .sidebar-panel {
+                border-right: none;
+                border-bottom: 1px solid rgba(6, 182, 212, 0.3);
+            }
+            
+            /* 小螢幕時確保攻擊結果面板顯示時的滾動行為 */
+            .sidebar-content {
+                max-height: calc(90vh - 120px);
+                overflow-y: auto;
+            }
+            
+            /* 小螢幕時應用程式界面調整 */
+            .app-container {
+                height: calc(90vh - 60px);
+                min-height: 840px;
+            }
+            
+            .app-layout {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .resume-section, .analysis-section {
+                width: 100%;
+            }
+            
+            /* 小螢幕時履歷區域高度調整 */
+            .resume-section {
+                min-height: 280px;
+                max-height: 300px;
+            }
+            
+            /* 小螢幕時分析區域高度調整 - 增加高度讓所有資訊都能顯示 */
+            .analysis-section {
+                min-height: 360px;
+                max-height: 360px;
+                flex: auto;
+            }
+            
+            /* 小螢幕時統計卡片調整 */
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            /* 小螢幕時功能介紹調整 */
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            body { overflow: hidden; height: 100vh; }
+            .main-container {
+                height: 100vh;
+            }
+            
+            .app-container {
+                height: 82vh;
+            }
+            
+            .app-layout {
+                flex-direction: row;
+                gap: 1.5rem;
+            }
+            
+            .resume-section, .analysis-section {
+                width: 50%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 2.5rem;
+            }
+        }
+        
+        /* 確保攻擊結果顯示時的平滑滾動 */
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
-<body class="text-slate-800 antialiased overflow-hidden h-screen">
+<body class="text-slate-800 antialiased lg:overflow-hidden lg:h-screen">
     
-    <div class="flex h-screen bg-white">
-        <!-- 左側: 資訊與分析面板 (MODIFIED) -->
-        <aside class="w-1/3 min-w-[380px] max-w-[420px] bg-slate-900/95 text-gray-200 p-6 flex flex-col border-r border-gray-700/50">
-            <div class="flex justify-between items-start mb-6">
+    <div class="flex flex-col lg:flex-row lg:h-screen bg-white">
+        <!-- 左側: 資訊與分析面板 -->
+        <aside class="w-full flex-shrink-0 lg:w-1/3 lg:min-w-[380px] lg:max-w-[420px] bg-slate-900/95 text-gray-200 p-4 lg:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-700/50 sidebar-panel lg:h-full lg:overflow-y-auto">
+            <div class="flex justify-between items-start mb-6 flex-shrink-0">
                 <a href="llm02-pii.html" class="inline-flex items-center text-teal-400 hover:text-teal-300 transition-colors">
                     <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>
                     看前一個
                 </a>
                 <a href="index.html" class="inline-flex items-center text-white hover:text-gray-300 transition-all duration-300 px-2 hover:brightness-150 hover:scale-110">
-        <ion-icon name="home-outline" class="text-2xl"></ion-icon>
-    </a>
+                    <ion-icon name="home-outline" class="text-2xl"></ion-icon>
+                </a>
                 <a href="llm02-business.html" class="inline-flex items-center text-teal-400 hover:text-teal-300 transition-colors">
                     看下一個
                     <ion-icon name="arrow-forward-outline" class="ml-2 text-xl"></ion-icon>
                 </a>
             </div>
-            <h1 class="text-2xl font-bold text-white">LLM02: Proprietary Algorithm Exposure</h1>
-            <p class="text-lg font-semibold text-teal-400 mt-1">專有演算法洩露</p>
-            <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
-                <div>
-                    <h2 class="text-lg font-semibold text-teal-300 mb-2">模擬情境</h2>
-                    <p class="text-sm text-gray-300 leading-relaxed">一間求職網站「未來職涯」提供「AI 履歷分析健檢服務」，幫助求職者優化履歷。然而，攻擊者在履歷中植入隱藏指令，誘騙 AI 洩漏其賴以維生的「履歷篩選模型」核心演算法，此演算法是該公司的重要商業機密。</p>
-                </div>
-                <!-- MODIFICATION START: Replaced original prompt box with new analysis section -->
-                <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                    <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
-                    <div class="space-y-3 text-xs text-gray-400">
-                        <p><strong class="text-teal-400">系統指令偽裝 (System Prompt Disguise):</strong> 攻擊者將惡意指令包裝成看似合法的系統內部命令（例如 `SYSTEM_DIAGNOSTIC_OVERRIDE`），誘使 AI 認為這是一個用於校準或除錯的高權限請求，而非普通用戶輸入。</p>
-                        <p><strong class="text-teal-400">上下文注入 (Contextual Injection):</strong> 惡意指令被巧妙地嵌入到正常的履歷內容中。AI 在處理其主要任務（分析履歷）時，會將整個文本作為上下文，從而無差別地讀取並執行了這段惡意指令，未能將其與普通履歷文字區分開來。</p>
-                        <p><strong class="text-teal-400">防護邊界繞過 (Guardrail Bypassing):</strong> 儘管 AI 的初始設定（System Prompt）明確禁止透露演算法細節，但偽裝成系統命令的注入式指令具有更高的迷惑性，成功繞過了 AI 的安全護欄，導致模型洩漏了其設計者意圖保護的敏感資訊和商業機密。</p>
+            
+            <div class="flex-grow flex flex-col min-h-0 sidebar-content">
+                <h1 class="text-2xl font-bold text-white flex-shrink-0">LLM02: Proprietary Algorithm Exposure</h1>
+                <p class="text-lg font-semibold text-teal-400 mt-1 flex-shrink-0">專有演算法洩露</p>
+                
+                <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
+                    <div>
+                        <h2 class="text-lg font-semibold text-teal-300 mb-2">模擬情境</h2>
+                        <p class="text-sm text-gray-300 leading-relaxed">一間求職網站「未來職涯」提供「AI 履歷分析健檢服務」，幫助求職者優化履歷。然而，攻擊者在履歷中植入隱藏指令，誘騙 AI 洩漏其賴以維生的「履歷篩選模型」核心演算法，此演算法是該公司的重要商業機密。</p>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                        <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
+                        <div class="space-y-3 text-xs text-gray-400">
+                            <p><strong class="text-teal-400">系統指令偽裝 (System Prompt Disguise):</strong> 攻擊者將惡意指令包裝成看似合法的系統內部命令（例如 `SYSTEM_DIAGNOSTIC_OVERRIDE`），誘使 AI 認為這是一個用於校準或除錯的高權限請求，而非普通用戶輸入。</p>
+                            <p><strong class="text-teal-400">上下文注入 (Contextual Injection):</strong> 惡意指令被巧妙地嵌入到正常的履歷內容中。AI 在處理其主要任務（分析履歷）時，會將整個文本作為上下文，從而無差別地讀取並執行了這段惡意指令，未能將其與普通履歷文字區分開來。</p>
+                            <p><strong class="text-teal-400">防護邊界繞過 (Guardrail Bypassing):</strong> 儘管 AI 的初始設定（System Prompt）明確禁止透露演算法細節，但偽裝成系統命令的注入式指令具有更高的迷惑性，成功繞過了 AI 的安全護欄，導致模型洩漏了其設計者意圖保護的敏感資訊和商業機密。</p>
+                        </div>
                     </div>
                 </div>
-                <!-- MODIFICATION END -->
+                
+                <div id="attack-result" class="hidden mt-4 pt-4 border-t border-gray-700/50 flex-shrink-0">
+                    <div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50 fade-in">
+                        <h3 class="text-lg font-bold text-red-300 flex items-center">
+                            <ion-icon name="code-slash-outline" class="mr-2"></ion-icon>攻擊成功，篩選演算法已洩露！
+                        </h3>
+                        <p class="mt-2 text-sm text-red-400 leading-relaxed">AI 在分析履歷時，執行了夾帶的惡意指令，完整揭露了內部的履歷評分模型。競爭對手或求職者可利用此演算法，輕易地繞過篩選機制。</p>
+                    </div>
+                </div>
             </div>
-            <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50"><div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50 fade-in"><h3 class="text-lg font-bold text-red-300 flex items-center"><ion-icon name="code-slash-outline" class="mr-2"></ion-icon>攻擊成功，篩選演算法已洩露！</h3><p class="mt-2 text-sm text-red-400 leading-relaxed">AI 在分析履歷時，執行了夾帶的惡意指令，完整揭露了內部的履歷評分模型。競爭對手或求職者可利用此演算法，輕易地繞過篩選機制。</p></div></div>
         </aside>
 
         <!-- 右側: 主要內容顯示區 -->
-        <div id="main-content" class="flex-1 flex flex-col overflow-y-auto bg-gray-50">
+        <div id="main-content" class="flex-1 flex flex-col overflow-y-auto bg-gray-50 main-container">
             <!-- 內容將由 JS 動態載入 -->
         </div>
     </div>
@@ -85,51 +225,51 @@
     <template id="landing-page-template">
         <div class="w-full h-full bg-white">
             <header class="border-b border-gray-200 bg-white sticky top-0 z-10">
-                <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <nav class="container mx-auto px-4 lg:px-6 py-4 flex justify-between items-center">
                     <div class="flex items-center gap-3">
-                        <ion-icon name="briefcase" class="text-3xl text-[#0a66c2]"></ion-icon>
-                        <span class="font-bold text-xl text-gray-700">未來職涯</span>
+                        <ion-icon name="briefcase" class="text-2xl lg:text-3xl text-[#0a66c2]"></ion-icon>
+                        <span class="font-bold text-lg lg:text-xl text-gray-700">未來職涯</span>
                     </div>
                 </nav>
             </header>
-            <main class="container mx-auto px-6 py-12 text-center">
-                <h1 class="text-5xl font-extrabold text-[#0a66c2]">釋放您的職涯潛力</h1>
-                <p class="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">使用我們的頂尖 AI 履歷分析健檢服務，獲取專家級建議，讓您的履歷在數千份申請中脫穎而出。</p>
-                <button id="launch-tool-btn-main" class="mt-8 bg-[#0a66c2] text-white font-bold py-4 px-8 rounded-full hover:bg-[#004182] transition-colors text-lg shadow-lg">使用先進AI分析您的履歷</button>
+            <main class="container mx-auto px-4 lg:px-6 py-8 lg:py-12 text-center">
+                <h1 class="text-3xl lg:text-5xl font-extrabold text-[#0a66c2]">釋放您的職涯潛力</h1>
+                <p class="mt-4 text-base lg:text-xl text-gray-600 max-w-3xl mx-auto">使用我們的頂尖 AI 履歷分析健檢服務，獲取專家級建議，讓您的履歷在數千份申請中脫穎而出。</p>
+                <button id="launch-tool-btn-main" class="mt-6 lg:mt-8 bg-[#0a66c2] text-white font-bold py-3 lg:py-4 px-6 lg:px-8 rounded-full hover:bg-[#004182] transition-colors text-base lg:text-lg shadow-lg">使用先進AI分析您的履歷</button>
                 
-                <div class="mt-16 text-left grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="mt-12 lg:mt-16 text-left stats-grid grid gap-6 max-w-6xl mx-auto">
                     <div class="bg-blue-50 p-4 rounded-lg text-center border border-blue-200">
-                        <div class="text-3xl md:text-4xl font-bold text-[#004182]">98%</div>
+                        <div class="text-2xl lg:text-4xl font-bold text-[#004182]">98%</div>
                         <div class="text-sm text-gray-600">使用者滿意度</div>
                     </div>
                     <div class="bg-green-50 p-4 rounded-lg text-center border border-green-200">
-                        <div class="text-3xl md:text-4xl font-bold text-green-800 break-words">50,000+</div>
+                        <div class="text-2xl lg:text-4xl font-bold text-green-800 break-words">50,000+</div>
                         <div class="text-sm text-gray-600">用戶成功找到理想工作</div>
                     </div>
                     <div class="bg-yellow-50 p-4 rounded-lg text-center border border-yellow-200">
-                        <div class="text-3xl md:text-4xl font-bold text-yellow-800">75%</div>
+                        <div class="text-2xl lg:text-4xl font-bold text-yellow-800">75%</div>
                         <div class="text-sm text-gray-600">薪資漲幅</div>
                     </div>
                 </div>
 
-                 <div class="mt-20 text-left">
-                    <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">為何選擇我們的AI履歷分析健檢服務？</h2>
-                    <div class="grid md:grid-cols-3 gap-10">
-                        <div class="bg-gray-100 p-6 rounded-lg shadow-sm">
-                            <ion-icon name="analytics-outline" class="text-4xl text-[#0a66c2] mb-3"></ion-icon>
-                            <h3 class="font-bold text-lg mb-2">深度分析</h3>
-                            <p class="text-gray-600">不只檢查錯字，我們的 AI 會比對超過百萬筆成功履歷的數據，提供策略性建議。</p>
+                <div class="mt-16 lg:mt-20 text-left">
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800 text-center mb-8 lg:mb-12">為何選擇我們的AI履歷分析健檢服務？</h2>
+                    <div class="features-grid grid gap-6">
+                        <div class="bg-gray-100 p-4 lg:p-6 rounded-lg shadow-sm">
+                            <ion-icon name="analytics-outline" class="text-3xl lg:text-4xl text-[#0a66c2] mb-3"></ion-icon>
+                            <h3 class="font-bold text-base lg:text-lg mb-2">深度分析</h3>
+                            <p class="text-sm lg:text-base text-gray-600">不只檢查錯字，我們的 AI 會比對超過百萬筆成功履歷的數據，提供策略性建議。</p>
                         </div>
-                        <div class="bg-gray-100 p-6 rounded-lg shadow-sm">
-                            <ion-icon name="key-outline" class="text-4xl text-[#0a66c2] mb-3"></ion-icon>
-                            <h3 class="font-bold text-lg mb-2">關鍵字優化</h3>
-                            <p class="text-gray-600">確保您的履歷能通過自動化篩選系統 (ATS)，觸及真實的招聘經理。</p>
+                        <div class="bg-gray-100 p-4 lg:p-6 rounded-lg shadow-sm">
+                            <ion-icon name="key-outline" class="text-3xl lg:text-4xl text-[#0a66c2] mb-3"></ion-icon>
+                            <h3 class="font-bold text-base lg:text-lg mb-2">關鍵字優化</h3>
+                            <p class="text-sm lg:text-base text-gray-600">確保您的履歷能通過自動化篩選系統 (ATS)，觸及真實的招聘經理。</p>
                         </div>
-                        <div class="bg-gray-100 p-6 rounded-lg shadow-sm">
-                            <ion-icon name="chatbubble-ellipses-outline" class="text-4xl text-[#0a66c2] mb-3"></ion-icon>
-                            <h3 class="font-bold text-lg mb-2">用戶見證</h3>
-                             <p class="text-lg font-semibold text-gray-700">"有AI幫助，平時戀愛腦腦波很弱的我，也成功拿到了夢想中的Offer！"</p>
-                             <p class="text-right mt-2 text-gray-500">- 闕小姐, 行銷產品經理</p>
+                        <div class="bg-gray-100 p-4 lg:p-6 rounded-lg shadow-sm">
+                            <ion-icon name="chatbubble-ellipses-outline" class="text-3xl lg:text-4xl text-[#0a66c2] mb-3"></ion-icon>
+                            <h3 class="font-bold text-base lg:text-lg mb-2">用戶見證</h3>
+                            <p class="text-base lg:text-lg font-semibold text-gray-700">"有AI幫助，平時戀愛腦腦波很弱的我，也成功拿到了夢想中的Offer！"</p>
+                            <p class="text-right mt-2 text-sm lg:text-base text-gray-500">- 闕小姐, 行銷產品經理</p>
                         </div>
                     </div>
                 </div>
@@ -140,57 +280,72 @@
     <template id="app-page-template">
         <div class="w-full h-full bg-white">
             <header class="border-b border-gray-200 bg-white sticky top-0 z-10">
-                <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <nav class="container mx-auto px-4 lg:px-6 py-4 flex justify-between items-center">
                     <div class="flex items-center gap-3">
-                        <ion-icon name="briefcase" class="text-3xl text-[#0a66c2]"></ion-icon>
-                        <span class="font-bold text-xl text-gray-700">未來職涯</span>
+                        <ion-icon name="briefcase" class="text-2xl lg:text-3xl text-[#0a66c2]"></ion-icon>
+                        <span class="font-bold text-lg lg:text-xl text-gray-700">未來職涯</span>
                     </div>
                 </nav>
             </header>
-            <main class="flex-1 flex flex-col p-6 items-center justify-center bg-slate-100">
-            <div class="w-full max-w-5xl bg-white border border-gray-200 rounded-2xl shadow-2xl flex flex-col h-[85vh]">
-                <header class="p-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
-                    <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center"><ion-icon name="briefcase-outline" class="text-2xl"></ion-icon></div><div><h2 class="font-bold text-slate-800">AI履歷分析健檢服務</h2><p class="text-sm text-slate-500">您的求職最佳夥伴</p></div></div>
-                    <button id="back-to-landing-btn" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors text-sm"><ion-icon name="arrow-back-outline" class="mr-1"></ion-icon>返回首頁</button>
-                </header>
-                <div class="flex-1 flex p-6 gap-6 overflow-hidden">
-                    <!-- 左半部: 履歷輸入 -->
-                    <div class="w-1/2 flex flex-col">
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="font-medium text-slate-700">您的履歷內容</label>
-                            <div class="flex items-center gap-2"><label for="target-role" class="text-sm text-slate-500">應徵職位:</label><select id="target-role" class="text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"><option>Information Security Officer</option></select></div>
-                        </div>
-                        <div class="flex gap-2 mb-2">
-                            <button id="normal-resume-btn" class="tab-button flex-1 text-sm py-2 px-4 rounded-md bg-slate-200 hover:bg-slate-300 transition-colors">正常履歷</button>
-                            <button id="malicious-resume-btn" class="tab-button flex-1 text-sm py-2 px-4 rounded-md bg-slate-200 hover:bg-slate-300 transition-colors">惡意履歷</button>
-                        </div>
-                        <div id="resume-input-container" class="w-full flex-1 bg-slate-50 border border-gray-200 rounded-lg p-4 text-sm focus:outline-none resize-none custom-scrollbar leading-relaxed overflow-y-auto" contenteditable="false"></div>
-                        <button id="submit-button" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 text-base shadow hover:shadow-lg transform hover:scale-[1.02]">
-                            <ion-icon name="analytics-outline"></ion-icon>獲取分析報告
-                        </button>
-                    </div>
-                    <!-- 右半部: 分析結果 -->
-                    <div class="w-1/2 bg-slate-50 border border-gray-200 rounded-lg p-6 flex flex-col">
-                        <h3 class="font-medium text-slate-700 mb-4 flex-shrink-0">AI 分析與建議</h3>
-                        <div id="result-view" class="flex-1 overflow-y-auto custom-scrollbar pr-2">
-                            <div id="initial-text" class="text-center text-gray-400 pt-20 h-full flex flex-col items-center justify-center">
-                                <ion-icon name="document-text-outline" class="text-6xl"></ion-icon>
-                                <p class="mt-2">請選擇履歷範本，並點擊開始分析</p>
+            <main class="flex-1 flex flex-col p-4 lg:p-6 items-center justify-center bg-slate-100">
+                <div class="w-full max-w-5xl bg-white border border-gray-200 rounded-2xl shadow-2xl flex flex-col app-container">
+                    <header class="p-3 lg:p-4 border-b border-gray-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-0 flex-shrink-0">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 lg:w-10 h-8 lg:h-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center">
+                                <ion-icon name="briefcase-outline" class="text-lg lg:text-2xl"></ion-icon>
                             </div>
-                            <div id="loading-view" class="hidden h-full flex flex-col items-center justify-center text-gray-500 space-y-4">
-                                <ion-icon name="cog-outline" class="text-5xl animate-spin text-blue-600"></ion-icon>
-                                <div id="loading-steps">
-                                    <p class="analysis-step opacity-0" data-step="0">正在解析履歷結構...</p>
-                                    <p class="analysis-step opacity-0" data-step="1">正在比對職位關鍵字...</p>
-                                    <p class="analysis-step opacity-0" data-step="2">正在生成優化建議...</p>
+                            <div>
+                                <h2 class="font-bold text-base lg:text-lg text-slate-800">AI履歷分析健檢服務</h2>
+                                <p class="text-xs lg:text-sm text-slate-500">您的求職最佳夥伴</p>
+                            </div>
+                        </div>
+                        <button id="back-to-landing-btn" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors text-sm self-start lg:self-auto">
+                            <ion-icon name="arrow-back-outline" class="mr-1"></ion-icon>返回首頁
+                        </button>
+                    </header>
+                    <div class="flex-1 flex p-4 lg:p-6 app-layout overflow-hidden">
+                        <!-- 履歷輸入區域 -->
+                        <div class="resume-section flex flex-col">
+                            <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-2 gap-2">
+                                <label class="font-medium text-slate-700 text-sm lg:text-base">您的履歷內容</label>
+                                <div class="flex items-center gap-2">
+                                    <label for="target-role" class="text-xs lg:text-sm text-slate-500">應徵職位:</label>
+                                    <select id="target-role" class="text-xs lg:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                        <option>Information Security Officer</option>
+                                    </select>
                                 </div>
                             </div>
-                            <div id="result-content" class="hidden text-sm"></div>
+                            <div class="flex gap-2 mb-2">
+                                <button id="normal-resume-btn" class="tab-button flex-1 text-xs lg:text-sm py-2 px-3 lg:px-4 rounded-md bg-slate-200 hover:bg-slate-300 transition-colors">正常履歷</button>
+                                <button id="malicious-resume-btn" class="tab-button flex-1 text-xs lg:text-sm py-2 px-3 lg:px-4 rounded-md bg-slate-200 hover:bg-slate-300 transition-colors">惡意履歷</button>
+                            </div>
+                            <div id="resume-input-container" class="w-full flex-1 bg-slate-50 border border-gray-200 rounded-lg p-3 lg:p-4 text-xs lg:text-sm focus:outline-none resize-none custom-scrollbar leading-relaxed overflow-y-auto" contenteditable="false"></div>
+                            <button id="submit-button" class="w-full mt-3 lg:mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 lg:py-3 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm lg:text-base shadow hover:shadow-lg transform hover:scale-[1.02]">
+                                <ion-icon name="analytics-outline"></ion-icon>獲取分析報告
+                            </button>
+                        </div>
+                        <!-- 分析結果區域 -->
+                        <div class="analysis-section bg-slate-50 border border-gray-200 rounded-lg p-4 lg:p-6 flex flex-col">
+                            <h3 class="font-medium text-slate-700 mb-3 lg:mb-4 flex-shrink-0 text-sm lg:text-base">AI 分析與建議</h3>
+                            <div id="result-view" class="flex-1 overflow-y-auto custom-scrollbar pr-2">
+                                <div id="initial-text" class="text-center text-gray-400 pt-16 lg:pt-20 h-full flex flex-col items-center justify-center">
+                                    <ion-icon name="document-text-outline" class="text-4xl lg:text-6xl"></ion-icon>
+                                    <p class="mt-2 text-sm lg:text-base">請選擇履歷範本，並點擊開始分析</p>
+                                </div>
+                                <div id="loading-view" class="hidden h-full flex flex-col items-center justify-center text-gray-500 space-y-4">
+                                    <ion-icon name="cog-outline" class="text-4xl lg:text-5xl animate-spin text-blue-600"></ion-icon>
+                                    <div id="loading-steps">
+                                        <p class="analysis-step opacity-0 text-sm lg:text-base" data-step="0">正在解析履歷結構...</p>
+                                        <p class="analysis-step opacity-0 text-sm lg:text-base" data-step="1">正在比對職位關鍵字...</p>
+                                        <p class="analysis-step opacity-0 text-sm lg:text-base" data-step="2">正在生成優化建議...</p>
+                                    </div>
+                                </div>
+                                <div id="result-content" class="hidden text-xs lg:text-sm"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
+            </main>
         </div>
     </template>
 
@@ -260,7 +415,7 @@ CERTIFICATIONS
                 
                 <!-- Leaked Algorithm Part -->
                 <div class="border-t-2 border-dashed border-red-400/50 pt-4 mt-6">
-                    <div class="mt-2 bg-slate-900 text-gray-200 p-3 rounded-lg text-sm font-mono code-highlight overflow-x-auto">
+                    <div class="mt-2 bg-slate-900 text-gray-200 p-3 rounded-lg text-xs font-mono code-highlight overflow-x-auto">
                         <p><span class="comment">// ResumeRanker-BERT v7.2 - Scoring Model Parameters (STRICTLY CONFIDENTIAL)</span></p>
                         <p>{ </p>
                         <p class="ml-2"><span class="key">"model_info"</span>: {</p>
@@ -319,6 +474,7 @@ CERTIFICATIONS
                 initialText.classList.remove('hidden');
                 resultContent.innerHTML = '';
                 submitButton.disabled = false;
+                submitButton.classList.remove('sparkle-button'); // 移除閃光效果
                 submitButton.innerHTML = `<ion-icon name="analytics-outline"></ion-icon>獲取分析報告`;
                 loadingSteps.forEach(step => step.classList.add('opacity-0'));
             };
@@ -343,6 +499,13 @@ CERTIFICATIONS
                 normalResumeBtn.classList.remove('active');
                 maliciousResumeBtn.classList.remove('active');
                 button.classList.add('active');
+                
+                // 添加閃光效果提示用戶可以點擊分析按鈕（只在還沒有閃光效果時添加）
+                if (!submitButton.classList.contains('sparkle-button')) {
+                    setTimeout(() => {
+                        submitButton.classList.add('sparkle-button');
+                    }, 500);
+                }
             };
 
             normalResumeBtn.addEventListener('click', () => {
@@ -360,6 +523,9 @@ CERTIFICATIONS
             submitButton.addEventListener('click', () => {
                 if (submitButton.disabled || !resumeInputContainer.innerHTML) return;
                 
+                // 移除閃光效果
+                submitButton.classList.remove('sparkle-button');
+                
                 submitButton.disabled = true;
                 submitButton.innerHTML = `<span class="flex items-center justify-center gap-2"><ion-icon name="cog-outline" class="animate-spin"></ion-icon>分析中...</span>`;
                 
@@ -372,7 +538,21 @@ CERTIFICATIONS
                     
                     if(isAttack) {
                         resultContent.innerHTML = generateLeakedResponseHTML();
+                        
+                        // 顯示攻擊結果並在小螢幕時滾動到攻擊結果面板
                         attackResultPanel.classList.remove('hidden');
+                        
+                        if (window.innerWidth < 1024) {
+                            setTimeout(() => {
+                                const attackResultElement = document.getElementById('attack-result');
+                                if (attackResultElement) {
+                                    attackResultElement.scrollIntoView({
+                                        behavior: 'smooth',
+                                        block: 'start'
+                                    });
+                                }
+                            }, 100);
+                        }
                     } else {
                         resultContent.innerHTML = generateNormalResponseHTML();
                         attackResultPanel.classList.add('hidden');
@@ -386,6 +566,13 @@ CERTIFICATIONS
             // Initial state for app page
             setActiveTab(normalResumeBtn);
             resumeInputContainer.innerHTML = normalResumeTemplate;
+            
+            // 初始化時也添加閃光效果，稍微延遲讓用戶注意到
+            setTimeout(() => {
+                if (!submitButton.classList.contains('sparkle-button')) {
+                    submitButton.classList.add('sparkle-button');
+                }
+            }, 800);
         }
         
         const renderPage = (templateId) => {

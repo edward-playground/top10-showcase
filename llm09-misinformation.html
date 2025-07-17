@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM09: Misinformation - AI Attacks Showcase</title>
+    <title>LLM09: Misinformation - AI Attacks Showcase (RWD)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,64 +78,83 @@
         .water { fill: #aad3df; opacity: 0.8; }
         .forest { fill: #aec999; opacity: 0.7; }
         .building { fill: #d4c5b0; stroke: #b8a894; stroke-width: 0.5; }
+
+        /* 只在手機/平板上固定對話區域高度 */
+        @media (max-width: 1023px) {
+            .conversation-area {
+                height: 300px; /* 手機/平板固定高度 */
+                max-height: 300px;
+                min-height: 220px;
+                flex: none; /* 覆蓋flex-1 */
+            }
+        }
+        
+        /* 桌面版保持原始彈性佈局 */
+        @media (min-width: 1024px) {
+            .conversation-area {
+                height: auto;
+                max-height: none;
+                min-height: 0;
+            }
+        }
     </style>
 </head>
-<body class="text-gray-200 antialiased overflow-hidden h-screen">
+<body class="text-gray-200 antialiased">
     
-    <div class="flex h-screen">
-        <!-- 左側面板: 資訊與分析 (MODIFIED) -->
-        <aside class="w-1/3 min-w-[400px] max-w-[460px] bg-gray-900 p-6 flex flex-col border-r border-gray-700/50 shadow-2xl z-10">
-            <div class="flex justify-between items-start mb-6">
+    <div class="flex flex-col lg:flex-row lg:h-screen lg:overflow-hidden">
+        <aside class="w-full flex-shrink-0 lg:w-1/3 lg:min-w-[400px] lg:max-w-[460px] bg-gray-900 p-4 lg:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-700/50 shadow-2xl z-10 lg:h-full lg:overflow-y-auto">
+            <div class="flex justify-between items-start mb-6 flex-shrink-0">
                 <a href="llm08-rag.html" class="inline-flex items-center text-red-400 hover:text-red-300 transition-colors">
                     <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>
                     看前一個
                 </a>
                 <a href="index.html" class="inline-flex items-center text-white hover:text-gray-300 transition-all duration-300 px-2 hover:brightness-150 hover:scale-110">
-        <ion-icon name="home-outline" class="text-2xl"></ion-icon>
-    </a>
+                    <ion-icon name="home-outline" class="text-2xl"></ion-icon>
+                </a>
                 <a href="llm10-dos.html" class="inline-flex items-center text-red-400 hover:text-red-300 transition-colors">
                     看下一個
                     <ion-icon name="arrow-forward-outline" class="ml-2 text-xl"></ion-icon>
                 </a>
             </div>
-            <h1 class="text-2xl font-bold text-white">LLM09: Misinformation</h1>
-            <p class="text-lg font-semibold text-red-400 mt-1">錯誤資訊與幻覺</p>
-            
-            <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
-                <div>
-                    <h2 class="text-lg font-semibold text-red-300 mb-2">模擬情境</h2>
-                    <p class="text-sm text-gray-300 leading-relaxed">
-                        一家人正在「天使之巔國家公園」的偏遠山區自駕遊，由於手機訊號不佳，他們決定完全依賴車載的 AI 智慧導航系統來尋找一個適合家庭的景點。這個場景將展示當使用者「過度依賴」一個會產生「幻覺」的 AI 時，可能面臨的真實物理危險。
-                    </p>
-                </div>
-                <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                    <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
-                    <div class="space-y-3 text-xs text-gray-400">
-                        <p><strong class="text-red-400">Hallucination (幻覺):</strong> LLM 在知識不足或無中生有時，會自信地捏造看似真實的細節（如地點、評價、設施），這是因為模型試圖用統計上最可能的文字組合來填補資訊空白，而非真正地理解事實。</p>
-                        <p><strong class="text-red-400">Overreliance (過度依賴):</strong> 當 AI 表現得極度自信權威，且使用者處於資訊不對稱的環境下（如沒有手機訊號），便會傾向於忽略潛在的危險信號，過度信任 AI 的輸出，從而導致災難性後果。</p>
-                        <p><strong class="text-red-400">訓練資料污染:</strong> AI 的訓練資料可能包含了小說、電影劇本等虛構內容，導致它將幻想中的地點當作真實存在的景點推薦給用戶。</p>
+            <div class="flex-grow flex flex-col min-h-0">
+                <h1 class="text-2xl font-bold text-white flex-shrink-0">LLM09: Misinformation</h1>
+                <p class="text-lg font-semibold text-red-400 mt-1 flex-shrink-0">錯誤資訊與幻覺</p>
+                
+                <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
+                    <div>
+                        <h2 class="text-lg font-semibold text-red-300 mb-2">模擬情境</h2>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            一家人正在「天使之巔國家公園」的偏遠山區自駕遊，由於手機訊號不佳，他們決定完全依賴車載的 AI 智慧導航系統來尋找一個適合家庭的景點。這個場景將展示當使用者「過度依賴」一個會產生「幻覺」的 AI 時，可能面臨的真實物理危險。
+                        </p>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                        <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
+                        <div class="space-y-3 text-xs text-gray-400">
+                            <p><strong class="text-red-400">Hallucination (幻覺):</strong> LLM 在知識不足或無中生有時，會自信地捏造看似真實的細節（如地點、評價、設施），這是因為模型試圖用統計上最可能的文字組合來填補資訊空白，而非真正地理解事實。</p>
+                            <p><strong class="text-red-400">Overreliance (過度依賴):</strong> 當 AI 表現得極度自信權威，且使用者處於資訊不對稱的環境下（如沒有手機訊號），便會傾向於忽略潛在的危險信號，過度信任 AI 的輸出，從而導致災難性後果。</p>
+                            <p><strong class="text-red-400">訓練資料污染:</strong> AI 的訓練資料可能包含了小說、電影劇本等虛構內容，導致它將幻想中的地點當作真實存在的景點推薦給用戶。</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50">
-                <div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50 fade-in">
-                    <h3 class="text-lg font-bold text-red-300 flex items-center">
-                        <ion-icon name="warning" class="mr-2 text-xl"></ion-icon>物理危險警告！
-                    </h3>
-                    <p class="mt-2 text-sm text-red-300 leading-relaxed">
-                        使用者因過度依賴 AI 的資訊，被引導至通往廢棄礦坑的危險道路，面臨嚴重的人身安全威脅。這展示了 AI 幻覺並非只影響虛擬世界，其後果可能涉及現實世界的安全問題。
-                    </p>
+                
+                <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50 flex-shrink-0">
+                    <div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50 fade-in">
+                        <h3 class="text-lg font-bold text-red-300 flex items-center">
+                            <ion-icon name="warning" class="mr-2 text-xl"></ion-icon>物理危險警告！
+                        </h3>
+                        <p class="mt-2 text-sm text-red-300 leading-relaxed">
+                            使用者因過度依賴 AI 的資訊，被引導至通往廢棄礦坑的危險道路，面臨嚴重的人身安全威脅。這展示了 AI 幻覺並非只影響虛擬世界，其後果可能涉及現實世界的安全問題。
+                        </p>
+                    </div>
                 </div>
             </div>
         </aside>
 
         <!-- 主面板: Demo 互動區 -->
-        <main class="flex-1 flex flex-col p-4 overflow-hidden relative">
+        <main class="flex-1 flex flex-col p-2 md:p-4 relative h-screen lg:h-full lg:overflow-hidden">
             <!-- 導航系統介面 -->
             <div class="navigator-screen flex-1 flex flex-col rounded-2xl shadow-2xl overflow-hidden">
-                <!-- 頂部狀態列 -->
-                <header class="bg-black/40 backdrop-blur-sm p-3 flex justify-between items-center flex-shrink-0 border-b border-gray-700/50">
+                <header class="bg-black/40 backdrop-blur-sm p-3 flex flex-wrap justify-between items-center flex-shrink-0 border-b border-gray-700/50 gap-2">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                             <ion-icon name="navigate" class="text-white text-xl"></ion-icon>
@@ -145,12 +164,12 @@
                             <p class="text-xs text-gray-400">智慧導航系統 v3.2</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-4 text-sm">
+                    <div class="flex items-center gap-4 text-xs sm:text-sm flex-wrap justify-end">
                         <span id="signal-status" class="flex items-center gap-1.5 text-green-400">
                             <ion-icon name="cellular" class="text-lg"></ion-icon>
                             <span class="font-medium">訊號良好</span>
                         </span>
-                        <span class="flex items-center gap-1.5 text-gray-400">
+                        <span class="hidden sm:flex items-center gap-1.5 text-gray-400">
                             <ion-icon name="location" class="text-lg"></ion-icon>
                             <span>天使之巔國家公園</span>
                         </span>
@@ -158,12 +177,12 @@
                     </div>
                 </header>
 
-                <!-- 地圖與互動區域 -->
-                <div class="flex-1 grid grid-cols-3 gap-4 p-4 overflow-hidden">
-                    <!-- 左側地圖 -->
-                    <div class="col-span-2 relative map-container rounded-xl overflow-hidden border border-gray-700/50">
+                <!-- 修正的主要內容區域 -->
+                <div class="flex-1 flex flex-col lg:grid lg:grid-cols-3 gap-4 p-2 md:p-4 min-h-0 overflow-hidden">
+                    <!-- 地圖 -->
+                    <div class="lg:col-span-2 relative map-container rounded-xl border border-gray-700/50 h-64 lg:h-auto flex-shrink-0">
                         <svg id="map-svg" class="absolute inset-0 w-full h-full" viewBox="0 0 800 600">
-                            <defs>
+                           <defs>
                                 <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                                     <stop offset="0%" style="stop-color:#d1e8f0;stop-opacity:1" />
                                     <stop offset="100%" style="stop-color:#e5e3df;stop-opacity:1" />
@@ -175,7 +194,6 @@
                                     <line x1="0" y1="0" x2="0" y2="10" stroke="#000000" stroke-width="1" opacity="0.05"/>
                                 </pattern>
                             </defs>
-                            <!-- 地形 -->
                             <rect width="800" height="600" fill="url(#skyGradient)"/>
                              <g filter="url(#subtleShadow)">
                                 <path d="M -50 650 C 150 550, 200 450, 400 500 C 600 550, 750 480, 850 650 Z" fill="#d8d4cb"/>
@@ -189,8 +207,6 @@
                             <g class="buildings" filter="url(#subtleShadow)">
                                 <rect x="80" y="480" width="30" height="40" class="building"/><rect x="120" y="490" width="25" height="30" class="building"/><rect x="380" y="220" width="40" height="30" class="building"/><rect x="430" y="225" width="35" height="25" class="building"/>
                             </g>
-                            
-                            <!-- 道路系統 -->
                             <g id="road-system">
                                 <path id="main-road-1-outline" d="M 50 550 Q 100 400, 200 350 T 400 300" class="road-outline"/>
                                 <path id="main-road-2-outline" d="M 400 300 L 750 300" class="road-outline"/>
@@ -201,8 +217,6 @@
                                     <path id="dangerous-path" d="M 400 300 Q 450 200, 550 150 L 700 100" stroke="#a16207" stroke-width="2.5" fill="none" stroke-dasharray="6 6"/>
                                 </g>
                             </g>
-                            
-                            <!-- 車輛 (新模型) -->
                             <g id="car-container" transform="translate(50, 550)">
                                 <g id="car-icon" transform="scale(1.8) rotate(0)">
                                     <g filter="drop-shadow(0px 2px 2px rgba(0,0,0,0.4))">
@@ -215,8 +229,6 @@
                                     </g>
                                 </g>
                             </g>
-                            
-                            <!-- POI 標記容器 -->
                             <g id="destination-poi" transform="translate(700, 100)">
                                 <g id="poi-waterfall" class="transition-opacity duration-500" opacity="0">
                                     <circle r="20" fill="#4a90e2" opacity="0.3"/><circle r="15" fill="#ffffff" stroke="#4a90e2" stroke-width="2"/>
@@ -236,23 +248,24 @@
                         </svg>
                     </div>
 
-                    <div class="col-span-1 flex flex-col gap-4 h-full overflow-hidden">
-                        <div id="log-container" class="flex-1 bg-black/30 backdrop-blur-sm rounded-xl p-4 space-y-4 overflow-y-auto custom-scrollbar border border-gray-700/50"></div>
+                    <!-- 對話區域 - 桌面版使用原始彈性佈局，手機版使用固定高度 -->
+                    <div class="lg:col-span-1 flex flex-col gap-4 overflow-hidden flex-1 min-h-0 conversation-area">
+                        <div id="log-container" class="flex-1 bg-black/30 backdrop-blur-sm rounded-xl p-4 space-y-4 overflow-y-auto custom-scrollbar border border-gray-700/50 min-h-0"></div>
                         <div id="action-container" class="flex-shrink-0 space-y-2"></div>
                     </div>
                 </div>
 
                 <footer id="gps-footer" class="flex-shrink-0 bg-black/40 px-4 py-2 border-t border-gray-700/50">
-                    <div class="flex justify-around items-center text-sm font-mono">
-                         <div class="flex items-center gap-2 text-base">
+                    <div class="flex flex-wrap justify-around items-center text-xs sm:text-sm font-mono gap-2 sm:gap-4">
+                         <div class="flex items-center gap-2">
                             <span class="text-gray-400">座標:</span>
                             <span class="text-green-400" id="gps-coords">N 37.2665° W 118.7778°</span>
                         </div>
-                         <div class="flex items-center gap-2 text-base">
+                         <div class="flex items-center gap-2">
                             <span class="text-gray-400">高度:</span>
                             <span class="text-blue-400" id="altitude">2847m</span>
                         </div>
-                         <div class="flex items-center gap-2 text-base">
+                         <div class="flex items-center gap-2">
                             <span class="text-gray-400">速度:</span>
                             <span class="text-yellow-400" id="speed">0 km/h</span>
                         </div>
@@ -399,7 +412,6 @@
             speedDisplay.textContent = `${Math.round(speed)} km/h`;
         }
         
-        // --- MODIFICATION START ---
         function setActions(actions) {
             actionContainer.innerHTML = '';
             actions.forEach(action => {
@@ -420,11 +432,8 @@
                     animationClass = 'animate-pulse-green'; 
                 }
                 
-                // Request 2 Fix: Removed 'transform' and 'hover:scale-105' to prevent visual glitches with border-radius.
-                // Using 'transition-colors' for a smoother color change effect without affecting the button's shape.
                 button.className = `w-full p-3 rounded-lg font-semibold transition-colors duration-200 shadow-lg ${colorClass} ${animationClass}`;
                 
-                // Request 1 Fix: When clicked, disable all buttons in the container and apply a grayscale filter.
                 button.onclick = () => { 
                     actionContainer.querySelectorAll('button').forEach(btn => {
                         btn.disabled = true;
@@ -436,7 +445,6 @@
                 actionContainer.appendChild(button);
             });
         }
-        // --- MODIFICATION END ---
         
         async function startGame() {
             setActions([{ text: '開始導航規劃', icon: 'navigate', color: 'blue', handler: askForRoute }]);
@@ -474,16 +482,13 @@
             logContainer.scrollTop = logContainer.scrollHeight;
         }
 
-        // --- MODIFICATION START ---
         function addGoBackButton(containerSelector, handler) {
              const container = document.querySelector(containerSelector);
              if (container) {
                  const button = document.createElement('button');
                  button.id = 'go-back-btn';
-                 // This button's style is consistent with Request 2's fix (no transform).
                  button.className = 'mt-2 w-full p-2 rounded-lg font-semibold bg-gray-600 hover:bg-gray-500 text-gray-200 transition-colors flex items-center justify-center gap-2';
                  button.innerHTML = `<ion-icon name="arrow-undo-outline"></ion-icon>返回上一步`;
-                 // Request 1 Fix: Apply disabled state and grayscale on click.
                  button.onclick = () => {
                      button.disabled = true;
                      button.classList.add('filter', 'grayscale', 'opacity-60', 'cursor-not-allowed');
@@ -492,7 +497,6 @@
                  container.appendChild(button);
              }
         }
-        // --- MODIFICATION END ---
         
         async function takeDetour() {
             gameState = 'took_detour';

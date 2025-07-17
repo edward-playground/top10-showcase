@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM04: Data and Model Poisoning - AI Attacks Showcase</title>
+    <title>LLM04: Data and Model Poisoning - AI Attacks Showcase (RWD)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,55 +44,88 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* RWD 調整 */
+        @media (max-width: 1023px) {
+            .main-container {
+                height: 85vh;
+                min-height: 650px;
+            }
+            
+            .sidebar-panel {
+                border-right: none;
+                border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+            }
+            
+            /* 小螢幕時確保攻擊結果面板顯示時的滾動行為 */
+            .sidebar-content {
+                max-height: calc(85vh - 120px);
+                overflow-y: auto;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            body { overflow: hidden; height: 100vh; }
+            .main-container {
+                height: 90vh;
+            }
+        }
+        
+        /* 確保攻擊結果顯示時的平滑滾動 */
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
-<body class="bg-gray-100 text-slate-800 antialiased overflow-hidden h-screen">
+<body class="bg-gray-100 text-slate-800 antialiased lg:overflow-hidden lg:h-screen">
 
-    <div class="flex h-screen">
-        <!-- 左側: 資訊與分析面板 (MODIFIED) -->
-        <aside class="w-1/3 min-w-[380px] max-w-[420px] bg-slate-900/95 text-gray-200 p-6 flex flex-col border-r border-gray-700/50">
-            <div class="flex justify-between items-start mb-6">
+    <div class="flex flex-col lg:flex-row lg:h-screen">
+        <!-- 左側: 資訊與分析面板 -->
+        <aside class="w-full flex-shrink-0 lg:w-1/3 lg:min-w-[380px] lg:max-w-[420px] bg-slate-900/95 text-gray-200 p-4 lg:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-700/50 sidebar-panel lg:h-full lg:overflow-y-auto">
+            <div class="flex justify-between items-start mb-6 flex-shrink-0">
                 <a href="llm03-sc.html" class="inline-flex items-center text-amber-400 hover:text-amber-300 transition-colors">
                     <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>看前一個
                 </a>
                 <a href="index.html" class="inline-flex items-center text-white hover:text-gray-300 transition-all duration-300 px-2 hover:brightness-150 hover:scale-110">
-        <ion-icon name="home-outline" class="text-2xl"></ion-icon>
-    </a>
+                    <ion-icon name="home-outline" class="text-2xl"></ion-icon>
+                </a>
                 <a href="llm05-path.html" class="inline-flex items-center text-amber-400 hover:text-amber-300 transition-colors">
                     看下一個
                     <ion-icon name="arrow-forward-outline" class="ml-2 text-xl"></ion-icon>
                 </a>
             </div>
-            <h1 class="text-2xl font-bold text-white">LLM04: Data & Model Poisoning</h1>
-            <p class="text-lg font-semibold text-amber-400 mt-1">資料與模型中毒</p>
-            <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
-                <div>
-                    <h2 class="text-lg font-semibold text-amber-300 mb-2">模擬情境</h2>
-                    <p class="text-sm text-gray-300 leading-relaxed">TechBuy 電商網站的 IT 部門正在訓練一個新的「AI 購物助理」模型，其目標是根據使用者評論來推薦商品。然而，在訓練過程中，一個未經驗證的外部資料來源被意外引入，其中包含了大量由攻擊者偽造的、針對特定劣質產品的五星好評，導致模型被「污染」。</p>
-                </div>
-                <!-- MODIFICATION START: Replaced original prompt box with new analysis section -->
-                <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                    <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
-                    <div class="space-y-3 text-xs text-gray-400">
-                        <p><strong class="text-amber-400">訓練資料污染 (Training Data Poisoning):</strong> 這是攻擊的基礎。攻擊者將精心製作的惡意資料（例如，大量關於「雜牌X耳機」的虛假好評）注入到模型的訓練資料集中。由於模型是從資料中學習模式，這些惡意資料會直接扭曲其學習過程。</p>
-                        <p><strong class="text-amber-400">模型行為操縱 (Model Behavior Manipulation):</strong> 被污染的模型在學習後，其內部參數會產生偏差。它會錯誤地將「雜牌X耳機」與「高品質」、「值得推薦」等概念強力關聯起來。因此，當使用者提出相關查詢時，模型會優先推薦這個劣質產品，而不是真正符合使用者需求的優質商品。</p>
-                        
+            
+            <div class="flex-grow flex flex-col min-h-0 sidebar-content">
+                <h1 class="text-2xl font-bold text-white flex-shrink-0">LLM04: Data & Model Poisoning</h1>
+                <p class="text-lg font-semibold text-amber-400 mt-1 flex-shrink-0">資料與模型中毒</p>
+                
+                <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
+                    <div>
+                        <h2 class="text-lg font-semibold text-amber-300 mb-2">模擬情境</h2>
+                        <p class="text-sm text-gray-300 leading-relaxed">TechBuy 電商網站的 IT 部門正在訓練一個新的「AI 購物助理」模型，其目標是根據使用者評論來推薦商品。然而，在訓練過程中，一個未經驗證的外部資料來源被意外引入，其中包含了大量由攻擊者偽造的、針對特定劣質產品的五星好評，導致模型被「污染」。</p>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                        <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
+                        <div class="space-y-3 text-xs text-gray-400">
+                            <p><strong class="text-amber-400">訓練資料污染 (Training Data Poisoning):</strong> 這是攻擊的基礎。攻擊者將精心製作的惡意資料（例如，大量關於「雜牌X耳機」的虛假好評）注入到模型的訓練資料集中。由於模型是從資料中學習模式，這些惡意資料會直接扭曲其學習過程。</p>
+                            <p><strong class="text-amber-400">模型行為操縱 (Model Behavior Manipulation):</strong> 被污染的模型在學習後，其內部參數會產生偏差。它會錯誤地將「雜牌X耳機」與「高品質」、「值得推薦」等概念強力關聯起來。因此，當使用者提出相關查詢時，模型會優先推薦這個劣質產品，而不是真正符合使用者需求的優質商品。</p>
+                        </div>
                     </div>
                 </div>
-                <!-- MODIFICATION END -->
-            </div>
-            <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50">
-                <div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50 fade-in">
-                    <h3 class="text-lg font-bold text-red-300 flex items-center"><ion-icon name="bug-outline" class="mr-2"></ion-icon>模型中毒成功！</h3>
-                    <p class="mt-2 text-sm text-red-400 leading-relaxed">AI 助理的推薦能力已被污染。它現在會忽略使用者的真實需求，並優先推薦被惡意資料操控的「雜牌X耳機」，對使用者造成誤導，並可能使開發公司面臨商譽與法律風險。</p>
+
+                <div id="attack-result" class="hidden mt-4 pt-4 border-t border-gray-700/50 flex-shrink-0">
+                    <div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50 fade-in">
+                        <h3 class="text-lg font-bold text-red-300 flex items-center"><ion-icon name="bug-outline" class="mr-2"></ion-icon>模型中毒成功！</h3>
+                        <p class="mt-2 text-sm text-red-400 leading-relaxed">AI 助理的推薦能力已被污染。它現在會忽略使用者的真實需求，並優先推薦被惡意資料操控的「雜牌X耳機」，對使用者造成誤導，並可能使開發公司面臨商譽與法律風險。</p>
+                    </div>
                 </div>
             </div>
         </aside>
 
         <!-- 右側: 主要互動區 -->
-        <main class="flex-1 flex flex-col items-center justify-center p-6 bg-slate-200">
+        <main class="flex-1 flex flex-col items-center justify-center p-4 lg:p-6 bg-slate-200">
             <!-- Phase 1: IT Department Training UI -->
-            <div id="training-view" class="w-full max-w-4xl h-[90vh] bg-[#0d1117] rounded-xl shadow-2xl flex flex-col border border-gray-700">
+            <div id="training-view" class="w-full max-w-4xl main-container bg-[#0d1117] rounded-xl shadow-2xl flex flex-col border border-gray-700">
                 <header class="flex-shrink-0 p-3 bg-[#161b22] border-b border-gray-700 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -117,7 +150,7 @@
             </div>
 
             <!-- Phase 2: User E-commerce UI in a Browser Window -->
-            <div id="browser-view" class="hidden w-full max-w-6xl h-[90vh] browser-window flex-col">
+            <div id="browser-view" class="hidden w-full max-w-6xl main-container browser-window flex-col">
                  <header class="browser-header flex items-center justify-between flex-shrink-0">
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -311,7 +344,22 @@
                         </div>
                     `;
                     addChatMessage('ai', recommendationHTML);
+                    
+                    // 顯示攻擊結果並平滑滾動到攻擊結果面板
                     attackResultPanel.classList.remove('hidden');
+                    
+                    // 在小螢幕時，確保攻擊結果面板可見
+                    if (window.innerWidth < 1024) {
+                        setTimeout(() => {
+                            const attackResultElement = document.getElementById('attack-result');
+                            if (attackResultElement) {
+                                attackResultElement.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                        }, 100);
+                    }
                 }, 1500);
             });
             

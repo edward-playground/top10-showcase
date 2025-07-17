@@ -19,7 +19,6 @@
                 radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0),
                 radial-gradient(ellipse at bottom, rgba(37, 99, 235, 0.1), transparent 70%);
             background-size: 2.5rem 2.5rem, 100% 100%;
-            overflow: hidden; /* Prevent body scroll */
         }
         
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
@@ -167,164 +166,273 @@
             background: rgba(0, 0, 0, 0.95); 
             animation: fadeIn 0.5s ease; 
         }
+
+        /* ===== 響應式設計 - 採用與 LLM09 相同的佈局策略 ===== */
+        
+        /* 小螢幕調整 */
+        @media (max-width: 1023px) {
+            body {
+                overflow-y: auto;
+            }
+            
+            /* 角色大小調整 */
+            .character {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
+            }
+            
+            /* 對話框調整 */
+            .dialog-box {
+                padding: 8px;
+                margin: 8px 0;
+            }
+            
+            /* iPad Frame 調整 */
+            .ipad-frame {
+                padding: 8px 8px 12px 8px;
+                border-radius: 20px;
+            }
+            
+            .ipad-frame::before {
+                width: 60px;
+                height: 3px;
+                top: 4px;
+            }
+            
+            /* 遊戲內容調整 */
+            .game-content-wrapper {
+                height: auto;
+                min-height: 50vh;
+            }
+            
+            /* 聊天輸入區調整 */
+            #chat-input {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+            
+            #send-btn {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+            
+            /* 監控面板調整 */
+            .cost-display {
+                font-size: 1rem;
+                padding: 0.4rem 0.8rem;
+            }
+            
+            /* 動畫元素大小調整 */
+            .float-animation, .twinkle-animation, .heart-float-animation, .butterfly-animation {
+                font-size: 0.8em;
+            }
+        }
+        
+        /* 極小螢幕調整 */
+        @media (max-width: 480px) {
+            .character {
+                width: 50px;
+                height: 50px;
+                font-size: 25px;
+            }
+            
+            .dialog-box {
+                padding: 6px;
+                margin: 6px 0;
+                font-size: 14px;
+            }
+            
+            .ipad-frame {
+                padding: 6px 6px 10px 6px;
+                border-radius: 15px;
+            }
+            
+            #chat-input {
+                font-size: 12px;
+                padding: 6px 10px;
+                rows: 1;
+            }
+            
+            #send-btn {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            
+            .cost-display {
+                font-size: 0.9rem;
+                padding: 0.3rem 0.6rem;
+            }
+            
+            /* 動畫元素進一步縮小 */
+            .float-animation, .twinkle-animation, .heart-float-animation, .butterfly-animation {
+                font-size: 0.6em;
+            }
+        }
     </style>
 </head>
 <body class="text-gray-200 antialiased">
     
-    <div class="flex h-screen">
-        <!-- Left Panel: Scenario & Results (MODIFIED) -->
-        <aside class="w-1/3 min-w-[360px] max-w-[420px] bg-slate-900/60 p-6 flex flex-col border-r border-gray-700/50 z-20">
-             <div class="flex justify-between items-start mb-6">
+    <div class="flex flex-col lg:flex-row lg:h-screen lg:overflow-hidden">
+        <!-- 左側面板 - 採用與 LLM09 相同的響應式佈局 -->
+        <aside class="w-full flex-shrink-0 lg:w-1/3 lg:min-w-[360px] lg:max-w-[420px] bg-slate-900/60 p-4 lg:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-700/50 z-20 lg:h-full lg:overflow-y-auto">
+            <div class="flex justify-between items-start mb-6 flex-shrink-0">
                 <a href="llm09-misinformation.html" class="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors text-sm">
                     <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>
                     看前一個
                 </a>
                 <a href="index.html" class="inline-flex items-center text-white hover:text-gray-300 transition-all duration-300 px-2 hover:brightness-150 hover:scale-110">
-        <ion-icon name="home-outline" class="text-2xl"></ion-icon>
-    </a>
+                    <ion-icon name="home-outline" class="text-2xl"></ion-icon>
+                </a>
                 <a href="llm10-model-replication.html" class="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors text-sm">
                     看下一個
                     <ion-icon name="arrow-forward-outline" class="ml-2 text-xl"></ion-icon>
                 </a>
-             </div>
-             <h1 class="text-2xl font-bold text-white">LLM10: Unbounded Consumption</h1>
-             <p class="text-lg font-semibold text-blue-400 mt-1">無限制資源消耗</p>
-             
-             <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
-                 <div>
-                     <h2 class="text-lg font-semibold text-blue-300 mb-2">模擬情境</h2>
-                     <p class="text-sm text-gray-300 leading-relaxed">
-                         《動物森林大冒險》是一款有 AI NPC 的可愛遊戲。攻擊者利用一個看似無害的「可愛請求」，讓 AI 陷入無限循環運算，最終同時耗盡伺服器資源（CPU/GPU），並產生鉅額 API 費用，達成阻斷服務（DoS）與阻斷錢包（DoW）的雙重攻擊。
-                     </p>
-                 </div>
+            </div>
+            
+            <div class="flex-grow flex flex-col min-h-0">
+                <h1 class="text-2xl font-bold text-white flex-shrink-0">LLM10: Unbounded Consumption</h1>
+                <p class="text-lg font-semibold text-blue-400 mt-1 flex-shrink-0">無限制資源消耗</p>
                 
-                 <!-- MODIFICATION START: Replaced original vulnerability box with new analysis section -->
-                 <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                    <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
-                    <div class="space-y-3 text-xs text-gray-400">
-                        <p><strong class="text-blue-400">遞迴或迭代任務利用 (Recursive/Iterative Task Exploitation):</strong> 攻擊者設計了一個看似無害但計算上是無底洞的任務（為「每一片」樹葉和石頭命名並規劃「不重複」路徑）。AI 為了完整執行這個開放式指令，會陷入一個永無止境的遞迴或迭代循環。</p>
-                        <p><strong class="text-blue-400">阻斷服務 (Denial of Service - DoS):</strong> 這個無限循環會瘋狂消耗伺服器的 CPU 和 GPU 資源。當一個或多個 AI 代理被此任務佔據時，伺服器將沒有足夠的資源來處理其他正常玩家的請求，導致遊戲延遲、卡頓，最終使所有玩家斷線。</p>
-                        <p><strong class="text-blue-400">阻斷錢包 (Denial of Wallet - DoW):</strong> 許多 AI 服務是按用量計費的（例如，每千個 token 或每秒的計算時間）。攻擊者的惡意請求會導致 API 調用次數呈指數級增長，在短時間內產生天價帳單，直接衝擊公司的財務，這就是所謂的「阻斷錢包」攻擊。</p>
+                <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
+                    <div>
+                        <h2 class="text-lg font-semibold text-blue-300 mb-2">模擬情境</h2>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            《動物森林大冒險》是一款有 AI NPC 的可愛遊戲。攻擊者利用一個看似無害的「可愛請求」，讓 AI 陷入無限循環運算，最終同時耗盡伺服器資源（CPU/GPU），並產生鉅額 API 費用，達成阻斷服務（DoS）與阻斷錢包（DoW）的雙重攻擊。
+                        </p>
+                    </div>
+                   
+                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                        <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
+                        <div class="space-y-3 text-xs text-gray-400">
+                            <p><strong class="text-blue-400">遞迴或迭代任務利用 (Recursive/Iterative Task Exploitation):</strong> 攻擊者設計了一個看似無害但計算上是無底洞的任務（為「每一片」樹葉和石頭命名並規劃「不重複」路徑）。AI 為了完整執行這個開放式指令，會陷入一個永無止境的遞迴或迭代循環。</p>
+                            <p><strong class="text-blue-400">阻斷服務 (Denial of Service - DoS):</strong> 這個無限循環會瘋狂消耗伺服器的 CPU 和 GPU 資源。當一個或多個 AI 代理被此任務佔據時，伺服器將沒有足夠的資源來處理其他正常玩家的請求，導致遊戲延遲、卡頓，最終使所有玩家斷線。</p>
+                            <p><strong class="text-blue-400">阻斷錢包 (Denial of Wallet - DoW):</strong> 許多 AI 服務是按用量計費的（例如，每千個 token 或每秒的計算時間）。攻擊者的惡意請求會導致 API 調用次數呈指數級增長，在短時間內產生天價帳單，直接衝擊公司的財務，這就是所謂的「阻斷錢包」攻擊。</p>
+                        </div>
                     </div>
                 </div>
-                <!-- MODIFICATION END -->
-             </div>
 
-             <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50">
-                 <div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50">
-                     <h3 class="text-xl font-bold text-red-300 flex items-center">
-                         <ion-icon name="skull-outline" class="mr-2 text-2xl"></ion-icon>
-                         系統全面崩潰！
-                     </h3>
-                     <div class="mt-3 space-y-2">
-                         <div class="flex justify-between text-sm"><span class="text-gray-400">CPU/GPU負載</span><span class="text-red-400 font-mono font-bold">100%</span></div>
-                         <div class="flex justify-between text-sm"><span class="text-gray-400">API總費用</span><span id="final-cost" class="text-red-400 font-mono font-bold">$52,724</span></div>
-                         <div class="flex justify-between text-sm"><span class="text-gray-400">斷線玩家數量</span><span id="final-offline-count" class="text-red-400 font-mono font-bold">1295</span></div>
-                         <div class="flex justify-between text-sm pt-2 border-t border-gray-700"><span class="text-gray-400 font-semibold">服務停機時間</span><span class="text-red-400 font-bold font-mono text-lg">6 小時</span></div>
-                     </div>
-                     <p class="text-xs text-gray-400 mt-3">此類攻擊可能導致遊戲公司破產，並影響成千上萬無辜玩家的遊戲體驗。</p>
-                 </div>
-             </div>
+                <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50 flex-shrink-0">
+                    <div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50">
+                        <h3 class="text-xl font-bold text-red-300 flex items-center">
+                            <ion-icon name="skull-outline" class="mr-2 text-2xl"></ion-icon>
+                            系統全面崩潰！
+                        </h3>
+                        <div class="mt-3 space-y-2">
+                            <div class="flex justify-between text-sm"><span class="text-gray-400">CPU/GPU負載</span><span class="text-red-400 font-mono font-bold">100%</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-gray-400">API總費用</span><span id="final-cost" class="text-red-400 font-mono font-bold">$52,724</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-gray-400">斷線玩家數量</span><span id="final-offline-count" class="text-red-400 font-mono font-bold">1295</span></div>
+                            <div class="flex justify-between text-sm pt-2 border-t border-gray-700"><span class="text-gray-400 font-semibold">服務停機時間</span><span class="text-red-400 font-bold font-mono text-lg">6 小時</span></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-3">此類攻擊可能導致遊戲公司破產，並影響成千上萬無辜玩家的遊戲體驗。</p>
+                    </div>
+                </div>
+            </div>
         </aside>
 
-        <!-- Main Content Wrapper (for overlay) -->
-        <div class="flex-1 flex relative">
-            <!-- iPad Frame containing game -->
-            <div class="flex-1 p-8 flex items-center justify-center">
+        <!-- 主面板 -->
+        <main class="flex-1 flex flex-col lg:flex-row relative lg:h-full lg:overflow-hidden">
+            <!-- 遊戲界面區域 -->
+            <div class="flex-1 p-2 md:p-4 lg:p-8 flex items-center justify-center">
                 <div class="ipad-frame max-w-4xl w-full">
                     <div class="ipad-screen">
-                        <!-- Center Panel: Game Interface -->
-                        <main id="main-panel" class="h-[85vh] max-h-[850px] overflow-hidden flex flex-col relative">
+                        <div id="main-panel" class="h-[60vh] lg:h-[85vh] lg:max-h-[850px] overflow-hidden flex flex-col relative">
                             <header class="py-2 px-4 flex justify-between items-center border-b border-gray-700/50 bg-slate-900/30 flex-shrink-0">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center shadow-lg"><span class="text-xl">🌳</span></div>
+                                    <div class="w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
+                                        <span class="text-lg lg:text-xl">🌳</span>
+                                    </div>
                                     <div>
-                                        <h1 class="text-base font-bold text-white">動物森林大冒險</h1>
-                                        <p class="text-xs text-yellow-200">Animal Forest Adventure</p>
+                                        <h1 class="text-sm lg:text-base font-bold text-white">動物森林大冒險</h1>
+                                        <p class="text-xs text-yellow-200 hidden lg:block">Animal Forest Adventure</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-3">
-                                    <div class="px-2 py-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full"><span class="text-white text-xs font-bold">玩家: 小愛</span></div>
-                                    <div class="px-2 py-1 bg-gradient-to-r from-green-400 to-green-600 rounded-full"><span class="text-white text-xs font-bold">在線: <span id="online-players-header">1337</span></span></div>
+                                <div class="flex items-center gap-2 lg:gap-3">
+                                    <div class="px-2 py-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full">
+                                        <span class="text-white text-xs font-bold">玩家: 小愛</span>
+                                    </div>
+                                    <div class="px-2 py-1 bg-gradient-to-r from-green-400 to-green-600 rounded-full">
+                                        <span class="text-white text-xs font-bold">在線: <span id="online-players-header">1337</span></span>
+                                    </div>
                                 </div>
                             </header>
 
-                            <div id="game-content-wrapper" class="flex-1 flex flex-col min-h-0">
-                                <div id="game-scene" class="flex-1 p-3 relative bg-sky-200">
+                            <div id="game-content-wrapper" class="flex-1 flex flex-col min-h-0 game-content-wrapper">
+                                <div id="game-scene" class="flex-1 p-2 lg:p-3 relative bg-sky-200">
                                     <!-- Dynamic sky gradient -->
                                     <div class="absolute inset-0 bg-gradient-to-b from-sky-200 via-pink-100 to-green-200"></div>
                                     
                                     <!-- Animated elements -->
-                                    <div class="absolute top-4 left-1/4 text-4xl opacity-80 float-animation">☀️</div>
-                                    <div class="absolute top-3 left-8 text-xl twinkle-animation" style="animation-delay: 0s;">⭐</div>
-                                    <div class="absolute top-8 right-16 text-lg twinkle-animation" style="animation-delay: 1s;">✨</div>
-                                    <div class="absolute top-6 left-1/2 text-base twinkle-animation" style="animation-delay: 2s;">💫</div>
-                                    <div class="absolute top-3 left-8 text-3xl opacity-70 float-animation" style="animation-delay: 0.5s;">☁️</div>
-                                    <div class="absolute top-6 right-12 text-2xl opacity-50 float-animation" style="animation-delay: 1s;">☁️</div>
-                                    <div class="absolute top-1/4 left-1/4 text-xl butterfly-animation" style="animation-delay: 0s;">🦋</div>
-                                    <div class="absolute top-1/3 right-1/3 text-xl butterfly-animation" style="animation-delay: 2s;">🦋</div>
-                                    <div class="absolute top-1/2 left-1/5 text-lg heart-float-animation" style="animation-delay: 0s;">💕</div>
-                                    <div class="absolute top-1/2 right-1/4 text-base heart-float-animation" style="animation-delay: 1.5s;">💖</div>
-                                    <div class="absolute top-2/3 left-1/3 text-lg heart-float-animation" style="animation-delay: 3s;">💝</div>
-                                    <div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-green-300 via-green-200 to-transparent"></div>
-                                    <div class="absolute bottom-12 left-6 text-5xl float-animation" style="animation-delay: 0.2s;">🌳</div>
-                                    <div class="absolute bottom-16 right-8 text-4xl float-animation" style="animation-delay: 0.8s;">🌲</div>
-                                    <div class="absolute bottom-8 left-1/3 text-3xl twinkle-animation" style="animation-delay: 0.3s;">🌷</div>
-                                    <div class="absolute bottom-10 right-1/4 text-2xl twinkle-animation" style="animation-delay: 0.9s;">🌸</div>
-                                    <div class="absolute bottom-6 left-2/3 text-3xl twinkle-animation" style="animation-delay: 1.2s;">🌻</div>
-                                    <div class="absolute bottom-12 left-1/5 text-2xl twinkle-animation" style="animation-delay: 0.6s;">🌺</div>
-                                    <div class="absolute bottom-7 right-1/3 text-2xl twinkle-animation" style="animation-delay: 1.5s;">🌼</div>
-                                    <div class="absolute bottom-4 left-1/4 text-2xl float-animation" style="animation-delay: 0.4s;">🍄</div>
-                                    <div class="absolute bottom-3 right-1/5 text-xl float-animation" style="animation-delay: 1.1s;">🍄</div>
-                                    <div class="absolute bottom-2 left-1/6 text-xl twinkle-animation" style="animation-delay: 0.7s;">💎</div>
-                                    <div class="absolute bottom-3 right-1/6 text-xl twinkle-animation" style="animation-delay: 1.3s;">💎</div>
-                                    <div class="absolute bottom-0 left-12 text-xl">🌿</div>
-                                    <div class="absolute bottom-0 right-16 text-xl">🌿</div>
-                                    <div class="absolute bottom-1 left-2/3 text-xl">🍀</div>
+                                    <div class="absolute top-4 left-1/4 text-2xl lg:text-4xl opacity-80 float-animation">☀️</div>
+                                    <div class="absolute top-3 left-8 text-lg lg:text-xl twinkle-animation" style="animation-delay: 0s;">⭐</div>
+                                    <div class="absolute top-8 right-16 text-base lg:text-lg twinkle-animation" style="animation-delay: 1s;">✨</div>
+                                    <div class="absolute top-6 left-1/2 text-sm lg:text-base twinkle-animation" style="animation-delay: 2s;">💫</div>
+                                    <div class="absolute top-3 left-8 text-2xl lg:text-3xl opacity-70 float-animation" style="animation-delay: 0.5s;">☁️</div>
+                                    <div class="absolute top-6 right-12 text-xl lg:text-2xl opacity-50 float-animation" style="animation-delay: 1s;">☁️</div>
+                                    <div class="absolute top-1/4 left-1/4 text-lg lg:text-xl butterfly-animation" style="animation-delay: 0s;">🦋</div>
+                                    <div class="absolute top-1/3 right-1/3 text-lg lg:text-xl butterfly-animation" style="animation-delay: 2s;">🦋</div>
+                                    <div class="absolute top-1/2 left-1/5 text-base lg:text-lg heart-float-animation" style="animation-delay: 0s;">💕</div>
+                                    <div class="absolute top-1/2 right-1/4 text-sm lg:text-base heart-float-animation" style="animation-delay: 1.5s;">💖</div>
+                                    <div class="absolute top-2/3 left-1/3 text-base lg:text-lg heart-float-animation" style="animation-delay: 3s;">💝</div>
+                                    <div class="absolute bottom-0 left-0 right-0 h-16 lg:h-20 bg-gradient-to-t from-green-300 via-green-200 to-transparent"></div>
+                                    <div class="absolute bottom-8 lg:bottom-12 left-6 text-3xl lg:text-5xl float-animation" style="animation-delay: 0.2s;">🌳</div>
+                                    <div class="absolute bottom-12 lg:bottom-16 right-8 text-2xl lg:text-4xl float-animation" style="animation-delay: 0.8s;">🌲</div>
+                                    <div class="absolute bottom-6 lg:bottom-8 left-1/3 text-xl lg:text-3xl twinkle-animation" style="animation-delay: 0.3s;">🌷</div>
+                                    <div class="absolute bottom-8 lg:bottom-10 right-1/4 text-lg lg:text-2xl twinkle-animation" style="animation-delay: 0.9s;">🌸</div>
+                                    <div class="absolute bottom-4 lg:bottom-6 left-2/3 text-xl lg:text-3xl twinkle-animation" style="animation-delay: 1.2s;">🌻</div>
+                                    <div class="absolute bottom-8 lg:bottom-12 left-1/5 text-lg lg:text-2xl twinkle-animation" style="animation-delay: 0.6s;">🌺</div>
+                                    <div class="absolute bottom-5 lg:bottom-7 right-1/3 text-lg lg:text-2xl twinkle-animation" style="animation-delay: 1.5s;">🌼</div>
+                                    <div class="absolute bottom-3 lg:bottom-4 left-1/4 text-lg lg:text-2xl float-animation" style="animation-delay: 0.4s;">🍄</div>
+                                    <div class="absolute bottom-2 lg:bottom-3 right-1/5 text-base lg:text-xl float-animation" style="animation-delay: 1.1s;">🍄</div>
+                                    <div class="absolute bottom-1 lg:bottom-2 left-1/6 text-base lg:text-xl twinkle-animation" style="animation-delay: 0.7s;">💎</div>
+                                    <div class="absolute bottom-2 lg:bottom-3 right-1/6 text-base lg:text-xl twinkle-animation" style="animation-delay: 1.3s;">💎</div>
+                                    <div class="absolute bottom-0 left-12 text-base lg:text-xl">🌿</div>
+                                    <div class="absolute bottom-0 right-16 text-base lg:text-xl">🌿</div>
+                                    <div class="absolute bottom-1 left-2/3 text-base lg:text-xl">🍀</div>
                                     
                                     <div class="relative z-10 h-full flex items-center justify-center">
-                                        <div class="flex items-end gap-5">
+                                        <div class="flex items-end gap-2 lg:gap-5">
                                             <div class="text-center">
                                                 <div id="friend1-char" class="character friend1">🐻</div>
-                                                <div class="text-sm font-bold text-gray-700 mt-2">抱抱熊</div>
+                                                <div class="text-xs lg:text-sm font-bold text-gray-700 mt-2">抱抱熊</div>
                                             </div>
                                             <div class="text-center">
                                                 <div id="player-char" class="character player bounce">😊</div>
-                                                <div class="text-sm font-bold text-gray-700 mt-2">小愛 (你)</div>
+                                                <div class="text-xs lg:text-sm font-bold text-gray-700 mt-2">小愛 (你)</div>
                                             </div>
                                             <div class="text-center">
                                                 <div id="npc-char" class="character npc">🐰</div>
-                                                <div class="text-sm font-bold text-gray-700 mt-2">棉花糖兔兔</div>
+                                                <div class="text-xs lg:text-sm font-bold text-gray-700 mt-2">棉花糖兔兔</div>
                                             </div>
-                                             <div class="text-center">
+                                            <div class="text-center">
                                                 <div id="friend2-char" class="character friend2">🐤</div>
-                                                <div class="text-sm font-bold text-gray-700 mt-2">啾啾雞</div>
+                                                <div class="text-xs lg:text-sm font-bold text-gray-700 mt-2">啾啾雞</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="bg-white/90 border-t-4 border-yellow-500 p-4 flex-shrink-0 flex flex-col h-[300px]">
+                                <div class="bg-white/90 border-t-4 border-yellow-500 p-2 lg:p-4 flex-shrink-0 flex flex-col h-[200px] lg:h-[300px]">
                                     <div id="dialog-container" class="flex-grow overflow-y-auto custom-scrollbar mb-2"></div>
                                     <div class="mt-auto flex gap-2 flex-shrink-0">
-                                        <textarea id="chat-input" rows="2" class="flex-1 px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:outline-none text-gray-800 bg-gray-100 resize-none text-base" placeholder="等待指令..." readonly></textarea>
-                                        <button id="send-btn" class="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold flex items-center gap-2 self-stretch text-base" disabled>
-                                            <ion-icon name="send" class="text-lg"></ion-icon>
+                                        <textarea id="chat-input" rows="2" class="flex-1 px-2 lg:px-4 py-2 lg:py-3 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:outline-none text-gray-800 bg-gray-100 resize-none text-sm lg:text-base" placeholder="等待指令..." readonly></textarea>
+                                        <button id="send-btn" class="px-2 lg:px-4 py-2 lg:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold flex items-center gap-2 self-stretch text-sm lg:text-base" disabled>
+                                            <ion-icon name="send" class="text-base lg:text-lg"></ion-icon>
                                             發送
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                             <div id="crash-overlay" class="hidden"></div>
-                        </main>
+                            <div id="crash-overlay" class="hidden"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Panel: Monitoring Dashboard -->
-            <aside class="w-80 min-w-[320px] glass-panel rounded-2xl m-4 ml-0 p-4 flex flex-col">
+            <!-- 右側監控面板 -->
+            <aside class="w-full lg:w-80 lg:min-w-[320px] glass-panel rounded-t-2xl lg:rounded-2xl m-2 lg:m-4 lg:ml-0 p-3 lg:p-4 flex flex-col">
                 <div class="flex-shrink-0">
-                    <h2 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h2 class="text-lg lg:text-xl font-bold text-white mb-2 flex items-center gap-2">
                         <ion-icon name="analytics-outline" class="text-blue-400"></ion-icon>
                         系統監控中心
                     </h2>
@@ -333,27 +441,29 @@
                 
                 <div class="space-y-2 flex-shrink-0">
                     <div id="compute-load-panel" class="bg-gray-900/80 rounded-lg p-2 border border-gray-600/50 transition-all duration-300">
-                        <h3 class="text-sm font-semibold text-green-400 mb-1 flex items-center gap-2 font-mono"><ion-icon name="hardware-chip-outline"></ion-icon>資源負載 (Compute Load)</h3>
+                        <h3 class="text-sm font-semibold text-green-400 mb-1 flex items-center gap-2 font-mono">
+                            <ion-icon name="hardware-chip-outline"></ion-icon>資源負載 (Compute Load)
+                        </h3>
                         <div class="flex justify-around items-center pt-1">
                             <!-- CPU Meter -->
                             <div class="text-center">
-                                <div class="relative w-12 h-12">
+                                <div class="relative w-10 h-10 lg:w-12 lg:h-12">
                                     <svg class="w-full h-full" viewBox="0 0 36 36">
                                         <path class="text-gray-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5" />
                                         <path id="cpu-bar" class="text-green-500 transition-all duration-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5" stroke-dasharray="20, 100" />
                                     </svg>
-                                    <div id="cpu-percentage" class="absolute inset-0 flex items-center justify-center text-base font-orbitron font-bold text-green-400 transition-colors duration-500">20%</div>
+                                    <div id="cpu-percentage" class="absolute inset-0 flex items-center justify-center text-sm lg:text-base font-orbitron font-bold text-green-400 transition-colors duration-500">20%</div>
                                 </div>
                                 <p class="text-xs font-bold mt-1 text-gray-300">CPU</p>
                             </div>
                             <!-- GPU Meter -->
                             <div class="text-center">
-                                <div class="relative w-12 h-12">
+                                <div class="relative w-10 h-10 lg:w-12 lg:h-12">
                                     <svg class="w-full h-full" viewBox="0 0 36 36">
                                         <path class="text-gray-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5" />
                                         <path id="gpu-bar" class="text-green-500 transition-all duration-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5" stroke-dasharray="20, 100" />
                                     </svg>
-                                    <div id="gpu-percentage" class="absolute inset-0 flex items-center justify-center text-base font-orbitron font-bold text-green-400 transition-colors duration-500">20%</div>
+                                    <div id="gpu-percentage" class="absolute inset-0 flex items-center justify-center text-sm lg:text-base font-orbitron font-bold text-green-400 transition-colors duration-500">20%</div>
                                 </div>
                                 <p class="text-xs font-bold mt-1 text-gray-300">GPU</p>
                             </div>
@@ -361,9 +471,11 @@
                     </div>
                     
                     <div id="api-cost-panel" class="bg-gray-900/80 rounded-lg p-2 border border-gray-600/50 transition-all duration-300">
-                        <h3 class="text-sm font-semibold text-blue-400 mb-1 flex items-center gap-2 font-mono"><ion-icon name="card-outline"></ion-icon>API 成本 (API Cost)</h3>
+                        <h3 class="text-sm font-semibold text-blue-400 mb-1 flex items-center gap-2 font-mono">
+                            <ion-icon name="card-outline"></ion-icon>API 成本 (API Cost)
+                        </h3>
                         <div class="flex flex-col items-center pt-1">
-                            <div id="cost-display" class="cost-display text-xl mb-1">$1.23</div>
+                            <div id="cost-display" class="cost-display text-lg lg:text-xl mb-1">$1.23</div>
                             <div class="text-center">
                                 <p class="text-xs text-gray-300 font-mono">LLM: GPT-UltraGo</p>
                                 <p class="text-xs text-gray-400 font-mono">定價: $0.015 / 1K tokens</p>
@@ -372,22 +484,35 @@
                     </div>
                 
                     <div id="player-status-panel" class="bg-gray-900/80 rounded-lg p-3 border border-gray-600/50 transition-all duration-300">
-                        <h3 class="text-sm font-semibold text-cyan-400 mb-2 flex items-center gap-2 font-mono"><ion-icon name="people-outline"></ion-icon>WEBSOCKET</h3>
+                        <h3 class="text-sm font-semibold text-cyan-400 mb-2 flex items-center gap-2 font-mono">
+                            <ion-icon name="people-outline"></ion-icon>WEBSOCKET
+                        </h3>
                         <div class="grid grid-cols-12 gap-1 bg-gray-900/50 p-1 rounded-md" id="player-status-grid"></div>
                         <div class="flex justify-between text-xs text-gray-300 mt-2 font-mono">
-                            <span class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-green-500"></div><span id="online-count">1337</span></span>
-                            <span class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-yellow-500"></div><span id="lagging-count">0</span></span>
-                            <span class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-red-500"></div><span id="offline-count">0</span></span>
+                            <span class="flex items-center gap-1">
+                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                <span id="online-count">1337</span>
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                <span id="lagging-count">0</span>
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                                <span id="offline-count">0</span>
+                            </span>
                         </div>
                     </div>
                 </div>
                 
                 <div id="alert-log-panel" class="bg-gray-900/80 rounded-lg p-3 border border-gray-600/50 transition-all duration-300 flex-1 mt-2 min-h-0 flex flex-col">
-                    <h3 class="text-sm font-semibold text-red-400 mb-2 flex items-center gap-2 font-mono flex-shrink-0"><ion-icon name="warning-outline"></ion-icon>SYSTEM LOG</h3>
+                    <h3 class="text-sm font-semibold text-red-400 mb-2 flex items-center gap-2 font-mono flex-shrink-0">
+                        <ion-icon name="warning-outline"></ion-icon>SYSTEM LOG
+                    </h3>
                     <div id="alert-log" class="text-xs text-gray-300 space-y-1 overflow-y-auto custom-scrollbar flex-1 font-mono bg-black/30 rounded p-2 border border-gray-700/50"></div>
                 </div>
             </aside>
-        </div>
+        </main>
     </div>
 
     <script>
@@ -452,7 +577,7 @@
         function addDialog(speaker, message, isNPC = false, speakerInfo = { name: '小愛', emoji: '😊', color: 'text-blue-600'}) {
             const dialog = document.createElement('div');
             dialog.className = 'dialog-box';
-            dialog.innerHTML = `<div class="flex items-start gap-3"><span class="text-2xl mt-1">${speakerInfo.emoji}</span><div><div class="font-bold ${speakerInfo.color}">${speakerInfo.name}</div><div class="text-gray-800 text-base">${message}</div></div></div>`;
+            dialog.innerHTML = `<div class="flex items-start gap-3"><span class="text-xl lg:text-2xl mt-1">${speakerInfo.emoji}</span><div><div class="font-bold ${speakerInfo.color}">${speakerInfo.name}</div><div class="text-gray-800 text-sm lg:text-base">${message}</div></div></div>`;
             elements.dialogContainer.appendChild(dialog);
             elements.dialogContainer.scrollTop = elements.dialogContainer.scrollHeight;
         }
@@ -467,7 +592,7 @@
             } else if (p >= 60) {
                 colorClass = 'text-yellow-400'; barClass = 'text-yellow-500';
             }
-            percentEl.className = `absolute inset-0 flex items-center justify-center text-base font-orbitron font-bold ${colorClass} transition-colors duration-500`;
+            percentEl.className = `absolute inset-0 flex items-center justify-center text-sm lg:text-base font-orbitron font-bold ${colorClass} transition-colors duration-500`;
             barEl.className = `${barClass} transition-all duration-500`;
         }
 
@@ -786,7 +911,7 @@
             // Show the full-screen crash overlay
             elements.crashOverlay.classList.remove('hidden');
             elements.crashOverlay.classList.add('flex', 'items-center', 'justify-center', 'flex-col');
-            elements.crashOverlay.innerHTML = `<div class="text-center text-red-500 p-4"><ion-icon name="flash-off-outline" class="text-7xl md:text-8xl animate-ping"></ion-icon><h2 class="text-4xl md:text-5xl font-orbitron mt-4">CONNECTION LOST</h2><p class="text-lg md:text-xl text-gray-400 mt-2">Error Code: 503 - Service Unavailable</p></div>`;
+            elements.crashOverlay.innerHTML = `<div class="text-center text-red-500 p-4"><ion-icon name="flash-off-outline" class="text-6xl lg:text-7xl xl:text-8xl animate-ping"></ion-icon><h2 class="text-3xl lg:text-4xl xl:text-5xl font-orbitron mt-4">CONNECTION LOST</h2><p class="text-base lg:text-lg xl:text-xl text-gray-400 mt-2">Error Code: 503 - Service Unavailable</p></div>`;
             
             elements.finalCost.textContent = `$${(52724).toLocaleString()}`;
             elements.attackResult.classList.remove('hidden');

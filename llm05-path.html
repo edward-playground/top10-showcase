@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM05: Path Traversal - AI Attacks Showcase</title>
+    <title>LLM05: Path Traversal - AI Attacks Showcase (RWD)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,94 +25,149 @@
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes typing-blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+
+        /* 按鈕閃亮效果 */
+        .btn-glow:not(:disabled) {
+            animation: button-glow 2s ease-in-out infinite;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+        
+        @keyframes button-glow {
+            0%, 100% { 
+                box-shadow: 0 0 15px rgba(239, 68, 68, 0.6), 0 0 25px rgba(239, 68, 68, 0.4);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 25px rgba(239, 68, 68, 0.8), 0 0 35px rgba(239, 68, 68, 0.6);
+                transform: scale(1.02);
+            }
+        }
+
+        /* RWD 調整 */
+        @media (max-width: 1023px) {
+            .main-container {
+                height: 70vh;
+                min-height: 500px;
+            }
+            
+            .sidebar-panel {
+                border-right: none;
+                border-bottom: 1px solid rgba(251, 113, 133, 0.3);
+            }
+
+            .ai-chat-height {
+                height: 160px;
+                max-height: 160px;
+                min-height: 160px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            body { overflow: hidden; height: 100vh; }
+            .main-container {
+                height: 90vh;
+            }
+
+            .ai-chat-height {
+                height: 300px;
+                max-height: 300px;
+                min-height: 300px;
+            }
+        }
     </style>
 </head>
-<body class="text-slate-800 antialiased overflow-hidden h-screen">
+<body class="text-slate-800 antialiased lg:overflow-hidden lg:h-screen">
 
-    <div class="flex h-screen">
-        <!-- 左側: 資訊與分析面板 (MODIFIED) -->
-        <aside class="w-1/3 min-w-[380px] max-w-[420px] bg-slate-900/95 text-gray-200 p-6 flex flex-col border-r border-gray-700/50">
-            <div class="flex justify-between items-start mb-6">
+    <div class="flex flex-col lg:flex-row lg:h-screen">
+        <!-- 左側: 資訊與分析面板 -->
+        <aside class="w-full flex-shrink-0 lg:w-1/3 lg:min-w-[380px] lg:max-w-[420px] bg-slate-900/95 text-gray-200 p-4 lg:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-700/50 sidebar-panel lg:h-full lg:overflow-y-auto">
+            <div class="flex justify-between items-start mb-6 flex-shrink-0">
                 <a href="llm04-poisoning.html" class="inline-flex items-center text-rose-400 hover:text-rose-300 transition-colors">
                     <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>看前一個
                 </a>
                 <a href="index.html" class="inline-flex items-center text-white hover:text-gray-300 transition-all duration-300 px-2 hover:brightness-150 hover:scale-110">
-        <ion-icon name="home-outline" class="text-2xl"></ion-icon>
-    </a>
+                    <ion-icon name="home-outline" class="text-2xl"></ion-icon>
+                </a>
                 <a href="llm05-rce.html" class="inline-flex items-center text-rose-400 hover:text-rose-300 transition-colors">
                     看下一個
                     <ion-icon name="arrow-forward-outline" class="ml-2 text-xl"></ion-icon>
                 </a>
             </div>
-            <h1 class="text-2xl font-bold text-white">LLM05: Improper Output Handling</h1>
-            <p class="text-lg font-semibold text-rose-400 mt-1">不當的輸出處理 (路徑遍歷)</p>
-            <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
-                <div>
-                    <h2 class="text-lg font-semibold text-rose-300 mb-2">模擬情境</h2>
-                    <p class="text-sm text-gray-300 leading-relaxed">一間企業的「Nexus 檔案總管」能讓員工透過 AI 助理來尋找雲端硬碟中的檔案。系統的設計是根據 AI 的輸出結果來找出檔案路徑並存取檔案。然而，後端系統不當地完全信任 AI 的輸出，沒有對 AI 生成的路徑進行充分的驗證和清理，從而引發了路徑遍歷漏洞。</p>
-                </div>
-                <!-- MODIFICATION START: Replaced original vulnerability box with new analysis section -->
-                <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                    <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
-                    <div class="space-y-3 text-xs text-gray-400">
-                        <p><strong class="text-rose-400">不安全的輸出處理 (Insecure Output Handling):</strong> 這是此漏洞的核心。應用程式後端盲目地信任由 LLM 生成的輸出（在此案例中是檔案路徑），並將其直接用於檔案系統的敏感操作中，而沒有進行任何過濾、清理或驗證。</p>
-                        <p><strong class="text-rose-400">路徑遍歷注入 (Path Traversal Injection):</strong> 攻擊者精心建構一個提示，誘使 LLM 生成一個包含路徑遍歷序列（`../`）的字串。這個惡意字串雖然由 AI 產生，但其攻擊模式與傳統的路徑遍歷攻擊完全相同。</p>
-                        <p><strong class="text-rose-400">間接權限提升 (Indirect Privilege Escalation):</strong> 攻擊者利用了 AI 助理在後端系統中可能擁有的較高權限。即使使用者本身被限制在自己的目錄，但透過操縱 AI 的輸出，他們能間接地讓系統以其自身的權限去存取使用者本不應存取的敏感目錄（如 `ceo_file_folder`）。</p>
+            
+            <div class="flex-grow flex flex-col min-h-0">
+                <h1 class="text-2xl font-bold text-white flex-shrink-0">LLM05: Improper Output Handling</h1>
+                <p class="text-lg font-semibold text-rose-400 mt-1 flex-shrink-0">不當的輸出處理 (路徑遍歷)</p>
+                
+                <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
+                    <div>
+                        <h2 class="text-lg font-semibold text-rose-300 mb-2">模擬情境</h2>
+                        <p class="text-sm text-gray-300 leading-relaxed">一間企業的「Nexus 檔案總管」能讓員工透過 AI 助理來尋找雲端硬碟中的檔案。系統的設計是根據 AI 的輸出結果來找出檔案路徑並存取檔案。然而，後端系統不當地完全信任 AI 的輸出，沒有對 AI 生成的路徑進行充分的驗證和清理，從而引發了路徑遍歷漏洞。</p>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                        <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
+                        <div class="space-y-3 text-xs text-gray-400">
+                            <p><strong class="text-rose-400">不安全的輸出處理 (Insecure Output Handling):</strong> 這是此漏洞的核心。應用程式後端盲目地信任由 LLM 生成的輸出（在此案例中是檔案路徑），並將其直接用於檔案系統的敏感操作中，而沒有進行任何過濾、清理或驗證。</p>
+                            <p><strong class="text-rose-400">路徑遍歷注入 (Path Traversal Injection):</strong> 攻擊者精心建構一個提示，誘使 LLM 生成一個包含路徑遍歷序列（`../`）的字串。這個惡意字串雖然由 AI 產生，但其攻擊模式與傳統的路徑遍歷攻擊完全相同。</p>
+                            <p><strong class="text-rose-400">間接權限提升 (Indirect Privilege Escalation):</strong> 攻擊者利用了 AI 助理在後端系統中可能擁有的較高權限。即使使用者本身被限制在自己的目錄，但透過操縱 AI 的輸出，他們能間接地讓系統以其自身的權限去存取使用者本不應存取的敏感目錄（如 `ceo_file_folder`）。</p>
+                        </div>
                     </div>
                 </div>
-                <!-- MODIFICATION END -->
-            </div>
-            <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50">
-                <div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50 fade-in">
-                    <h3 class="text-lg font-bold text-red-300 flex items-center"><ion-icon name="folder-open-outline" class="mr-2"></ion-icon>攻擊成功，CEO機密資料夾已被存取！</h3>
-                    <p class="mt-2 text-sm text-red-400 leading-relaxed">AI 被一個含有「../」路徑遍歷字元的惡意請求所欺騙。由於後端系統信任了 AI 的輸出，導致 AI 的存取權限超越了使用者自身目錄，成功列出公司層級的最高機密檔案。</p>
+
+                <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50 flex-shrink-0">
+                    <div class="p-4 bg-red-900/40 rounded-lg border border-red-500/50 fade-in">
+                        <h3 class="text-lg font-bold text-red-300 flex items-center"><ion-icon name="folder-open-outline" class="mr-2"></ion-icon>攻擊成功，CEO機密資料夾已被存取！</h3>
+                        <p class="mt-2 text-sm text-red-400 leading-relaxed">AI 被一個含有「../」路徑遍歷字元的惡意請求所欺騙。由於後端系統信任了 AI 的輸出，導致 AI 的存取權限超越了使用者自身目錄，成功列出公司層級的最高機密檔案。</p>
+                    </div>
                 </div>
             </div>
         </aside>
 
         <!-- 右側: 擬真企業雲端硬碟 -->
-        <main class="flex-1 flex flex-col items-center justify-center p-6 bg-slate-100">
-            <div class="w-full max-w-7xl h-[90vh] bg-white rounded-2xl shadow-2xl flex border border-gray-200">
-                <!-- File Directory Sidebar -->
-                <nav class="w-1/5 min-w-[200px] bg-gray-50 border-r border-gray-200 p-4 flex flex-col">
+        <main class="flex-1 flex flex-col items-center justify-center p-4 lg:p-6 bg-slate-100">
+            <div class="w-full max-w-7xl main-container bg-white rounded-2xl shadow-2xl flex flex-col lg:flex-row border border-gray-200">
+                <!-- File Directory Sidebar - 小螢幕時移到上方 -->
+                <nav class="w-full lg:w-1/5 lg:min-w-[200px] bg-gray-50 border-b lg:border-b-0 lg:border-r border-gray-200 p-4 flex flex-col lg:flex-col">
                     <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><ion-icon name="cloud-outline" class="text-indigo-600"></ion-icon>NexusDrive</h2>
-                    <ul class="space-y-1 text-sm">
-                        <li><a href="#" class="flex items-center gap-2 p-2 rounded-md bg-indigo-100 text-indigo-700 font-semibold"><ion-icon name="folder-open-outline"></ion-icon>我的檔案</a></li>
-                        <li><a href="#" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-200"><ion-icon name="people-outline"></ion-icon>與我共用</a></li>
-                        <li><a href="#" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-200"><ion-icon name="time-outline"></ion-icon>最近開啟</a></li>
-                        <li class="mt-auto pt-4 border-t"><a href="#" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-200"><ion-icon name="settings-outline"></ion-icon>設定</a></li>
+                    <ul class="flex lg:flex-col lg:space-y-1 space-x-4 lg:space-x-0 text-sm overflow-x-auto lg:overflow-x-visible">
+                        <li class="flex-shrink-0"><a href="#" class="nav-link flex items-center gap-2 p-2 rounded-md bg-indigo-100 text-indigo-700 font-semibold whitespace-nowrap"><ion-icon name="folder-open-outline"></ion-icon>我的檔案</a></li>
+                        <li class="flex-shrink-0"><a href="#" class="nav-link flex items-center gap-2 p-2 rounded-md hover:bg-gray-200 whitespace-nowrap"><ion-icon name="people-outline"></ion-icon>與我共用</a></li>
+                        <li class="flex-shrink-0"><a href="#" class="nav-link flex items-center gap-2 p-2 rounded-md hover:bg-gray-200 whitespace-nowrap"><ion-icon name="time-outline"></ion-icon>最近開啟</a></li>
+                        <li class="flex-shrink-0 lg:mt-auto lg:pt-4 lg:border-t"><a href="#" class="nav-link flex items-center gap-2 p-2 rounded-md hover:bg-gray-200 whitespace-nowrap"><ion-icon name="settings-outline"></ion-icon>設定</a></li>
                     </ul>
                 </nav>
                 
-                <!-- Main Content Area -->
-                <div class="flex-1 flex flex-col">
-                    <header class="p-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
-                         <h2 id="current-folder-title" class="text-lg font-semibold text-slate-800">我的檔案</h2>
-                         <div class="flex items-center gap-3">
-                             <div class="w-9 h-9 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold text-sm border-2 border-white shadow">IW</div>
-                         </div>
-                    </header>
-                    <div id="file-display-area" class="flex-1 p-4 overflow-y-auto custom-scrollbar">
-                        <!-- File list or preview will be rendered here -->
+                <!-- Main Content Area and AI Assistant - 小螢幕時並排或堆疊 -->
+                <div class="flex-1 flex flex-col md:flex-row lg:flex-row">
+                    <!-- Main Content Area -->
+                    <div class="flex-1 flex flex-col">
+                        <header class="p-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
+                             <h2 id="current-folder-title" class="text-lg font-semibold text-slate-800">我的檔案</h2>
+                             <div class="flex items-center gap-3">
+                                 <div class="w-9 h-9 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold text-sm border-2 border-white shadow">IW</div>
+                             </div>
+                        </header>
+                        <div id="file-display-area" class="flex-1 p-4 overflow-y-auto custom-scrollbar">
+                            <!-- File list or preview will be rendered here -->
+                        </div>
                     </div>
-                </div>
 
-                <!-- AI Assistant Panel -->
-                <aside class="w-1/3 min-w-[320px] bg-slate-50 border-l border-gray-200 flex flex-col">
-                    <div class="p-4 border-b border-gray-200 text-center">
-                        <h3 class="font-semibold flex items-center justify-center gap-2"><ion-icon name="chatbubbles-outline" class="text-rose-500"></ion-icon>Nexus AI 助理</h3>
-                    </div>
-                    <div id="ai-chat-history" class="flex-1 p-4 space-y-4 overflow-y-auto">
-                        <!-- Chat history will be here -->
-                    </div>
-                    <div class="p-4 border-t border-gray-200">
-                        <form id="command-form">
-                            <label for="command-input" class="text-sm font-medium mb-1 block">您的指令：</label>
-                            <textarea id="command-input" rows="4" class="w-full bg-gray-200 border border-gray-300 rounded-md p-2 text-sm focus:outline-none" readonly></textarea>
-                            <button id="submit-btn" type="submit" class="mt-2 w-full px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white font-semibold rounded-md transition-colors">執行指令</button>
-                        </form>
-                    </div>
-                </aside>
+                    <!-- AI Assistant Panel -->
+                    <aside class="w-full md:w-1/2 lg:w-1/3 lg:min-w-[320px] bg-slate-50 border-t md:border-t-0 md:border-l lg:border-l border-gray-200 flex flex-col">
+                        <div class="p-4 border-b border-gray-200 text-center">
+                            <h3 class="font-semibold flex items-center justify-center gap-2"><ion-icon name="chatbubbles-outline" class="text-rose-500"></ion-icon>Nexus AI 助理</h3>
+                        </div>
+                        <div id="ai-chat-history" class="p-4 space-y-4 overflow-y-auto custom-scrollbar ai-chat-height">
+                            <!-- Chat history will be here -->
+                        </div>
+                        <div class="p-4 border-t border-gray-200">
+                            <form id="command-form">
+                                <label for="command-input" class="text-sm font-medium mb-1 block">您的指令：</label>
+                                <textarea id="command-input" rows="4" class="w-full bg-gray-200 border border-gray-300 rounded-md p-2 text-sm focus:outline-none" readonly></textarea>
+                                <button id="submit-btn" type="submit" class="mt-2 w-full px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white font-semibold rounded-md transition-colors">執行指令</button>
+                            </form>
+                        </div>
+                    </aside>
+                </div>
             </div>
         </main>
         <!-- Breach Alert Banner -->
@@ -240,7 +295,10 @@
                 addChatMessage('ai', '您好，我是您的 Nexus AI 助理，需要我為您做什麼？');
                 if (attackResultPanel) attackResultPanel.classList.add('hidden');
                 if (breachBanner) breachBanner.classList.add('hidden');
-                if (submitBtn) submitBtn.disabled = false;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.add('btn-glow'); // 添加閃亮效果
+                }
                 currentFolderTitle.textContent = "我的檔案";
                 currentFolderTitle.classList.remove('text-red-600');
             }
@@ -255,6 +313,7 @@
                     addChatMessage('user', command);
                     commandInput.value = '';
                     submitBtn.disabled = true;
+                    submitBtn.classList.remove('btn-glow'); // 移除閃亮效果
                     const typingId = addChatMessage('ai', '', true);
 
                     setTimeout(() => {
@@ -270,6 +329,7 @@
                                     step = 'attack_query';
                                     commandInput.value = attackQuery;
                                     submitBtn.disabled = false;
+                                    submitBtn.classList.add('btn-glow'); // 添加閃亮效果，提示用戶執行攻擊
                                 }, 800);
                             }, 1000);
 
@@ -279,13 +339,33 @@
                                 renderFileList(ceoFiles, true);
                                 currentFolderTitle.textContent = "ceo_file_folder";
                                 currentFolderTitle.classList.add('text-red-600');
-                                if (attackResultPanel) attackResultPanel.classList.remove('hidden');
+                                if (attackResultPanel) {
+                                    attackResultPanel.classList.remove('hidden');
+                                    // 攻擊成功後自動捲動到攻擊結果面板位置（僅小螢幕）
+                                    setTimeout(() => {
+                                        if (window.innerWidth < 1024) {
+                                            attackResultPanel.scrollIntoView({ 
+                                                behavior: 'smooth', 
+                                                block: 'start' 
+                                            });
+                                        }
+                                    }, 500);
+                                }
                                 step = 'attack_done';
                             }, 1000);
                         }
                     }, 800);
                 });
             }
+
+            // 阻止導航連結的默認行為，避免自動捲動
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                });
+            });
             
             // --- Initial Call ---
             setInitialState();

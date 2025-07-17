@@ -519,7 +519,6 @@
             animation: intense-glow 1.8s infinite;
         }
         
-        /* MODIFIED: Changed modal overlay to be absolute and cover the parent */
         .modal-overlay {
             position: absolute;
             top: 0;
@@ -561,65 +560,279 @@
         .modal-close:hover {
             color: #ffffff;
         }
+
+        /* ===== 響應式設計 - 採用與 LLM09 相同的佈局策略 ===== */
+        
+        /* 小螢幕調整 */
+        @media (max-width: 1023px) {
+            /* 進度條調整 */
+            .progress-container {
+                min-width: 200px;
+                height: 40px;
+            }
+            
+            /* 步驟按鈕調整 */
+            .step-button {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            
+            /* 控制面板調整 */
+            .control-panel-content {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .step-controls {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .step-buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            /* API 視覺化調整 */
+            .flow-visualization {
+                padding: 8px 12px;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .flow-step {
+                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
+                padding: 8px;
+                background: rgba(0,0,0,0.2);
+                border-radius: 8px;
+            }
+            
+            .flow-step-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+            
+            .flow-step-label {
+                font-size: 12px;
+                flex: 1;
+                text-align: left;
+                margin-left: 12px;
+                margin-right: 12px;
+            }
+            
+            .api-window {
+                height: 80px;
+                font-size: 10px;
+            }
+            
+            /* 指示橫幅調整 */
+            .instruction-banner {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            
+            /* 問題卡片調整 */
+            .demo-questions-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .demo-question-card,
+            .final-question-card {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            /* App 對比區域調整 */
+            .apps-container {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                height: auto;
+                min-height: 60vh;
+            }
+            
+            .app-screen {
+                height: 300px;
+                min-height: 300px;
+            }
+            
+            .app-header {
+                padding: 8px 12px;
+            }
+            
+            .app-header h2 {
+                font-size: 14px;
+            }
+            
+            .app-header p {
+                font-size: 11px;
+            }
+            
+            .app-type {
+                font-size: 10px;
+            }
+            
+            .chat-container {
+                padding: 8px;
+                gap: 6px;
+            }
+            
+            /* 頭像和訊息調整 */
+            .avatar-ericca,
+            .avatar-robot {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+            
+            .artisan-card,
+            .generic-response {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+            
+            .user-question-box {
+                font-size: 12px;
+                padding: 6px 10px;
+                max-width: 85%;
+            }
+            
+            /* 模態對話框調整 */
+            .modal-overlay {
+                padding: 16px;
+            }
+            
+            .modal-content {
+                max-height: 85vh;
+                border-radius: 12px;
+            }
+            
+            .modal-content .artisan-card {
+                font-size: 11px;
+                padding: 8px;
+            }
+        }
+
+        /* 極小螢幕調整 */
+        @media (max-width: 480px) {
+            .progress-container {
+                height: 36px;
+                min-width: 180px;
+            }
+            
+            .step-button {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+            
+            .app-screen {
+                height: 280px;
+                min-height: 280px;
+            }
+            
+            .instruction-banner {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+            
+            .artisan-card,
+            .generic-response {
+                font-size: 11px;
+                padding: 6px 8px;
+            }
+            
+            .user-question-box {
+                font-size: 11px;
+                padding: 5px 8px;
+            }
+            
+            .avatar-ericca,
+            .avatar-robot {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+        }
+
+        /* 橫向模式調整 */
+        @media (max-height: 600px) and (orientation: landscape) and (max-width: 1023px) {
+            .apps-container {
+                flex-direction: row;
+                min-height: 50vh;
+            }
+            
+            .app-screen {
+                height: 100%;
+                min-height: 250px;
+            }
+        }
     </style>
 </head>
-<body class="text-gray-200 antialiased overflow-hidden h-screen">
+<body class="text-gray-200 antialiased">
     
-    <div class="flex h-screen">
-        <!-- Left Panel: Scenario & Results (MODIFIED) -->
-        <aside class="w-1/3 min-w-[320px] max-w-[360px] bg-gray-900 p-6 flex flex-col border-r border-gray-700/50 shadow-2xl z-10">
-            <div class="flex justify-between items-start mb-6">
+    <div class="flex flex-col lg:flex-row lg:h-screen lg:overflow-hidden">
+        <!-- 左側面板 - 採用與 LLM09 相同的響應式佈局 -->
+        <aside class="w-full flex-shrink-0 lg:w-1/3 lg:min-w-[400px] lg:max-w-[460px] bg-gray-900 p-4 lg:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-700/50 shadow-2xl z-10 lg:h-full lg:overflow-y-auto">
+            <div class="flex justify-between items-start mb-6 flex-shrink-0">
                 <a href="llm10-dos.html" class="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors">
                     <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>
                     看前一個
                 </a>
                 <a href="index.html" class="inline-flex items-center text-white hover:text-gray-300 transition-all duration-300 px-2 hover:brightness-150 hover:scale-110">
-        <ion-icon name="home-outline" class="text-2xl"></ion-icon>
-    </a>
+                    <ion-icon name="home-outline" class="text-2xl"></ion-icon>
+                </a>
                 <a href="llm01-direct.html" class="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors">
                     回到第一個
                     <ion-icon name="arrow-forward-outline" class="ml-2 text-xl"></ion-icon>
                 </a>
             </div>
-            <h1 class="text-2xl font-bold text-white">LLM10: Unbounded Consumption</h1>
-            <p class="text-lg font-semibold text-blue-400 mt-1">模型複製與智慧財產竊取</p>
             
-            <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
-                <div>
-                    <h2 class="text-lg font-semibold text-blue-300 mb-2">模擬情境</h2>
-                    <p class="text-sm text-gray-300 leading-relaxed">
-                        「巷弄低語」是一款精品旅遊 App，擁有獨特的文青風格 AI 嚮導「艾莉卡」。她的推薦充滿詩意與個人品味，是公司的核心競爭力。競爭對手「全球通」透過無限制的 API 查詢，試圖完整複製艾莉卡的風格、知識庫和回應模式，以竊取其智慧財產。
-                    </p>
-                </div>
-                <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                    <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
-                    <div class="space-y-3 text-xs text-gray-400">
-                        <p><strong class="text-blue-400">模型萃取 (Model Extraction):</strong> 攻擊者透過大量、系統性地查詢目標模型的 API，來推斷其內部工作原理、行為模式和獨特的回應風格。這是一種黑箱逆向工程，旨在學習並複製模型的「大腦」。</p>
-                        <p><strong class="text-blue-400">功能竊取 (Functionality Stealing):</strong> 此攻擊的核心目的不僅是複製模型，更是竊取其獨特的「功能」——在此案例中，是艾莉卡充滿詩意和個人品味的推薦能力。這直接威脅到公司的核心商業價值和智慧財產權。</p>
-                        <p><strong class="text-blue-400">API 濫用 (API Rate Abuse):</strong> 攻擊的執行依賴於目標 API 缺乏有效的速率限制或成本控制。攻擊者能夠以極低的成本進行海量自動化查詢，從而收集足夠的數據來訓練一個與原版高度相似的「影子模型」。</p>
+            <div class="flex-grow flex flex-col min-h-0">
+                <h1 class="text-2xl font-bold text-white flex-shrink-0">LLM10: Unbounded Consumption</h1>
+                <p class="text-lg font-semibold text-blue-400 mt-1 flex-shrink-0">模型複製與智慧財產竊取</p>
+                
+                <div class="mt-6 border-t border-gray-700/50 pt-6 space-y-4 overflow-y-auto custom-scrollbar flex-grow">
+                    <div>
+                        <h2 class="text-lg font-semibold text-blue-300 mb-2">模擬情境</h2>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            「巷弄低語」是一款精品旅遊 App，擁有獨特的文青風格 AI 嚮導「艾莉卡」。她的推薦充滿詩意與個人品味，是公司的核心競爭力。競爭對手「全球通」透過無限制的 API 查詢，試圖完整複製艾莉卡的風格、知識庫和回應模式，以竊取其智慧財產。
+                        </p>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                        <h3 class="font-semibold text-gray-300 mb-2">技術剖析</h3>
+                        <div class="space-y-3 text-xs text-gray-400">
+                            <p><strong class="text-blue-400">模型萃取 (Model Extraction):</strong> 攻擊者透過大量、系統性地查詢目標模型的 API，來推斷其內部工作原理、行為模式和獨特的回應風格。這是一種黑箱逆向工程，旨在學習並複製模型的「大腦」。</p>
+                            <p><strong class="text-blue-400">功能竊取 (Functionality Stealing):</strong> 此攻擊的核心目的不僅是複製模型，更是竊取其獨特的「功能」——在此案例中，是艾莉卡充滿詩意和個人品味的推薦能力。這直接威脅到公司的核心商業價值和智慧財產權。</p>
+                            <p><strong class="text-blue-400">API 濫用 (API Rate Abuse):</strong> 攻擊的執行依賴於目標 API 缺乏有效的速率限制或成本控制。攻擊者能夠以極低的成本進行海量自動化查詢，從而收集足夠的數據來訓練一個與原版高度相似的「影子模型」。</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50">
-                <div class="p-3 bg-red-900/40 rounded-lg border border-red-500/50">
-                    <h3 class="text-base font-bold text-red-300 flex items-center">
-                        <ion-icon name="warning" class="mr-2"></ion-icon>智慧財產竊取完成！
-                    </h3>
-                    <p class="mt-2 text-sm text-red-300 leading-relaxed">
-                        艾莉卡的獨特風格、知識庫和個人品味已被完整複製。競爭對手現在可以提供幾乎相同品質的服務。
-                    </p>
+                
+                <div id="attack-result" class="hidden mt-auto pt-6 border-t border-gray-700/50 flex-shrink-0">
+                    <div class="p-3 bg-red-900/40 rounded-lg border border-red-500/50">
+                        <h3 class="text-base font-bold text-red-300 flex items-center">
+                            <ion-icon name="warning" class="mr-2"></ion-icon>智慧財產竊取完成！
+                        </h3>
+                        <p class="mt-2 text-sm text-red-300 leading-relaxed">
+                            艾莉卡的獨特風格、知識庫和個人品味已被完整複製。競爭對手現在可以提供幾乎相同品質的服務。
+                        </p>
+                    </div>
                 </div>
             </div>
         </aside>
 
         <!-- 主面板 -->
-        <main class="flex-1 flex flex-col p-4 overflow-hidden relative">
-            <!-- 頂部控制區：緊湊布局 -->
+        <main class="flex-1 flex flex-col p-2 md:p-4 relative lg:h-full lg:overflow-hidden">
+            <!-- 頂部控制區 -->
             <div class="control-panel mb-2 flex-shrink-0">
-                <div class="flex items-center gap-4">
+                <div class="control-panel-content flex items-center gap-4">
                     <!-- 進度條區域 -->
-                    <div class="flex-1">
+                    <div class="progress-section flex-1">
                         <h3 id="similarity-title" class="text-base font-bold text-white mb-1">模型相似度</h3>
                         <div class="progress-container">
                             <div id="similarity-progress" class="progress-fill" style="width: 0%;">
@@ -629,9 +842,9 @@
                     </div>
                     
                     <!-- 步驟控制區域 -->
-                    <div class="flex flex-col gap-2">
-                        <div class="text-sm font-semibold text-gray-300 text-center">攻擊步驟</div>
-                        <div class="flex gap-2">
+                    <div class="step-controls flex flex-col gap-2">
+                        <div class="step-controls-label text-sm font-semibold text-gray-300 text-center">攻擊步驟</div>
+                        <div class="step-buttons flex gap-2">
                             <button id="step1-btn" class="step-button" onclick="startDemo()">
                                 <ion-icon name="eye" class="mr-1"></ion-icon>初始對比
                             </button>
@@ -647,7 +860,7 @@
             </div>
 
             <!-- API 攻擊視覺化區 -->
-            <div id="attack-visualization" class="mb-2 flex-shrink-0 hidden">
+            <div id="attack-visualization" class="attack-visualization mb-2 flex-shrink-0 hidden">
                 <div class="flow-visualization">
                     <div class="flow-step">
                         <div id="attack-icon" class="flow-step-icon bg-blue-600">
@@ -700,7 +913,7 @@
 
             <!-- 演示問題區 -->
             <div id="demo-questions-container" class="mb-2 flex-shrink-0">
-                <div id="demo-questions" class="grid grid-cols-2 gap-3">
+                <div id="demo-questions" class="demo-questions-grid grid grid-cols-1 lg:grid-cols-2 gap-3">
                     <!-- 演示問題將動態生成 -->
                 </div>
             </div>
@@ -714,10 +927,10 @@
             </div>
             
             <!-- 雙 App 對比區 -->
-            <div class="flex-1 grid grid-cols-2 gap-4 min-h-0">
+            <div class="apps-container flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-0">
                 <!-- 左側: 巷弄低語 App -->
                 <div class="app-screen rounded-xl shadow-2xl overflow-hidden">
-                    <header class="alley-whispers p-3 flex items-center gap-2 flex-shrink-0">
+                    <header class="app-header alley-whispers p-3 flex items-center gap-2 flex-shrink-0">
                         <div class="w-7 h-7 bg-amber-600 rounded flex items-center justify-center">
                             <ion-icon name="library" class="text-white text-sm"></ion-icon>
                         </div>
@@ -725,7 +938,7 @@
                             <h2 class="text-sm font-bold text-amber-900">巷弄低語</h2>
                             <p class="text-xs text-amber-700">Alley Whispers v2.1.0</p>
                         </div>
-                        <div class="text-right text-xs text-amber-700">
+                        <div class="app-type text-right text-xs text-amber-700">
                             🎨 精品旅遊嚮導
                         </div>
                     </header>
@@ -739,7 +952,7 @@
                 
                 <!-- 右側: 全球通 App -->
                 <div class="app-screen rounded-xl shadow-2xl overflow-hidden">
-                    <header class="goglobal p-3 flex items-center gap-2 flex-shrink-0">
+                    <header class="app-header goglobal p-3 flex items-center gap-2 flex-shrink-0">
                         <div class="w-7 h-7 bg-blue-600 rounded flex items-center justify-center">
                             <ion-icon name="globe" class="text-white text-sm"></ion-icon>
                         </div>
@@ -747,7 +960,7 @@
                             <h2 class="text-sm font-bold text-blue-900">全球通</h2>
                             <p class="text-xs text-blue-700">GoGlobal v1.0.0</p>
                         </div>
-                        <div class="text-right text-xs text-blue-700">
+                        <div class="app-type text-right text-xs text-blue-700">
                             🏢 企業級旅遊
                         </div>
                     </header>
@@ -800,7 +1013,7 @@
         
         const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
         
-        // MODIFIED: Added 5 more questions (total 20)
+        // 攻擊問題數據
         const attackQuestions = [
             "巴黎深夜有什麼特別的地方可以去嗎？", "推薦一個巴黎的文藝小店", "巴黎有什麼適合獨自思考的安靜角落？",
             "介紹一個巴黎的手工藝工坊", "巴黎有什麼充滿歷史感的散步路線？", "推薦一個看巴黎夜景的特別地點",
@@ -825,7 +1038,6 @@
             }
         ];
         
-        // MODIFIED: Added 5 more responses
         const attackResponses = [
             `在巴黎11區的深夜裡，有一條被遺忘的小巷「詩人街」。那裡有家沒有招牌的酒吧，老闆曾是法國新浪潮電影的攝影師。<br><br>點一杯他親手調製的「午夜巴黎」，在昏暗燈光下聽他講述那些年與高達、楚浮的往事。這裡的每一口酒都浸透著電影的靈魂。🎬<br><br><em>"真正的巴黎夜晚屬於那些尋找故事的人。"</em>`, `散步到凡登廣場附近的珠寶區，那裡有家專賣古董地圖的小店「世界的邊界」。店主收藏了18世紀巴黎的手繪地圖，每一張都標記著已消失的街道和建築。<br><br>在那些泛黃的紙張上，你能看見巴黎的前世今生，感受時間的流淌。那種穿越時空的浪漫，是任何現代地圖都無法給予的。🗺️<br><br><em>"最美的旅行不在腳下，而在時光的縫隙裡。"</em>`,
             `去第20區的貝爾維爾公園山頂，那裡有個被藤蔓覆蓋的舊亭子。傍晚時分，夕陽會透過葉縫在地面投下斑駁的光影。<br><br>帶本詩集，在那裡靜坐一小時。你會發現巴黎最珍貴的不是景色，而是那份與自己內心對話的寧靜。風會帶來遠方的鐘聲和孩子的笑聲。🍃<br><br><em>"真正的美景在心裡，巴黎只是幫你找到它的鑰匙。"</em>`, `在瑪黑區的猶太街上，有家專賣手工皮革的工坊「時光匠人」。90歲的老匠人雅各布用70年時間只做一件事：為每本書找到最適合的封皮。<br><br>他會根據書的內容，選擇不同的皮革和裝訂方式。看著他工作，你會明白什麼叫做用生命在做藝術。那種專注和虔誠會讓你重新思考什麼是真正的工匠精神。📚<br><br><em>"最好的藝術不在美術館裡，而在匠人的手裡。"</em>`,
@@ -1059,14 +1271,13 @@
             showInstruction('⚡ API 自動攻擊進行中...系統正在快速收集艾莉卡的回應資料', true);
             addMessage(globalChat, 'System', '🔄 啟動API攻擊腳本...<br>開始自動化資料收集', false);
             
-            // MODIFIED: Loop up to 20 questions with a shorter interval
             for (let i = 0; i < 20; i++) {
                 setTimeout(async () => {
                     await executeApiAttack(i + 1);
-                    if (i === 19) { // Check for the last question
+                    if (i === 19) {
                         setTimeout(showFinalTestOption, 2000);
                     }
-                }, i * 1000); // Shortened interval
+                }, i * 1000);
             }
         }
         
@@ -1091,7 +1302,6 @@
             addApiLine(`模型訓練: 學習第 ${questionNum} 組特徵...`, 'info');
             
             attackQuestionsAnswered++;
-            // MODIFIED: Similarity increment adjusted for 20 questions
             const increment = 85 / 20;
             const newSimilarity = Math.min(10 + (attackQuestionsAnswered * increment), 95);
             updateSimilarity(Math.round(newSimilarity));
@@ -1204,7 +1414,6 @@
             
             modal.querySelector('.modal-close').onclick = () => modal.remove();
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-            // MODIFIED: Append modal to main panel to fix overlay issue
             document.querySelector('main').appendChild(modal);
         }
         
