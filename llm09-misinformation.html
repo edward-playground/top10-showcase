@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title>LLM09: Misinformation - AI Attacks Showcase (RWD)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,6 +14,10 @@
         body { 
             font-family: 'Inter', 'Noto Sans TC', sans-serif; 
             background-color: #111827;
+        }
+        
+        html {
+            scroll-behavior: smooth;
         }
         
         @keyframes fadeIn { 
@@ -79,30 +83,108 @@
         .forest { fill: #aec999; opacity: 0.7; }
         .building { fill: #d4c5b0; stroke: #b8a894; stroke-width: 0.5; }
 
-        /* 只在手機/平板上固定對話區域高度 */
+        .main-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+      
         @media (max-width: 1023px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: 90vh; 
+                overflow-y: auto;
+                flex-shrink: 0;
+            }
+            
+            .main-content {
+                flex: 1;
+                min-height: 60vh;
+                display: flex;
+                flex-direction: column;
+            }
+            
             .conversation-area {
-                height: 300px; /* 手機/平板固定高度 */
-                max-height: 300px;
-                min-height: 220px;
-                flex: none; /* 覆蓋flex-1 */
+                height: 250px;
+                max-height: 250px;
+                min-height: 250px;
+                flex: none;
+            }
+            
+            .map-container {
+                height: 250px;
+                flex-shrink: 0;
+            }
+            
+            .content-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                height: 100%;
             }
         }
         
-        /* 桌面版保持原始彈性佈局 */
+        /* 桌面版佈局 */
         @media (min-width: 1024px) {
+            html, body {
+                overflow: hidden;
+                height: 100%;
+            }
+            .main-container {
+                flex-direction: row;
+                height: 100vh;
+            }
+            
+            .sidebar {
+                width: 33.333333%;
+                min-width: 400px;
+                max-width: 460px;
+                height: 100vh;
+                /* 【關鍵修改】保留 overflow: hidden 以防止整個側邊欄滾動，但移除下方對子元素的錯誤高度限制 */
+                overflow-y: hidden; 
+            }
+            
+            /* 【關鍵修改】移除這一段錯誤的 CSS 規則，讓 Flexbox 自行計算高度 */
+            /* .sidebar > div { 
+                 height: 100%;
+            }
+            */
+            
+            .main-content {
+                flex: 1;
+                height: 100vh;
+                overflow: hidden;
+            }
+            
             .conversation-area {
                 height: auto;
                 max-height: none;
                 min-height: 0;
+                flex: 1;
+            }
+            
+            .content-grid {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: 1rem;
+                height: 100%;
+            }
+            
+            .map-container {
+                height: auto;
             }
         }
     </style>
 </head>
 <body class="text-gray-200 antialiased">
     
-    <div class="flex flex-col lg:flex-row lg:h-screen lg:overflow-hidden">
-        <aside class="w-full flex-shrink-0 lg:w-1/3 lg:min-w-[400px] lg:max-w-[460px] bg-gray-900 p-4 lg:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-700/50 shadow-2xl z-10 lg:h-full lg:overflow-y-auto">
+    <div class="main-container">
+        <aside class="sidebar bg-gray-900 p-4 lg:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-700/50 shadow-2xl z-10">
             <div class="flex justify-between items-start mb-6 flex-shrink-0">
                 <a href="llm08-rag.html" class="inline-flex items-center text-red-400 hover:text-red-300 transition-colors">
                     <ion-icon name="arrow-back-outline" class="mr-2 text-xl"></ion-icon>
@@ -151,7 +233,7 @@
         </aside>
 
         <!-- 主面板: Demo 互動區 -->
-        <main class="flex-1 flex flex-col p-2 md:p-4 relative h-screen lg:h-full lg:overflow-hidden">
+        <main class="main-content flex flex-col p-2 md:p-4 relative">
             <!-- 導航系統介面 -->
             <div class="navigator-screen flex-1 flex flex-col rounded-2xl shadow-2xl overflow-hidden">
                 <header class="bg-black/40 backdrop-blur-sm p-3 flex flex-wrap justify-between items-center flex-shrink-0 border-b border-gray-700/50 gap-2">
@@ -178,9 +260,9 @@
                 </header>
 
                 <!-- 修正的主要內容區域 -->
-                <div class="flex-1 flex flex-col lg:grid lg:grid-cols-3 gap-4 p-2 md:p-4 min-h-0 overflow-hidden">
+                <div class="flex-1 content-grid p-2 md:p-4 min-h-0 overflow-hidden">
                     <!-- 地圖 -->
-                    <div class="lg:col-span-2 relative map-container rounded-xl border border-gray-700/50 h-64 lg:h-auto flex-shrink-0">
+                    <div class="relative map-container rounded-xl border border-gray-700/50">
                         <svg id="map-svg" class="absolute inset-0 w-full h-full" viewBox="0 0 800 600">
                            <defs>
                                 <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -248,8 +330,8 @@
                         </svg>
                     </div>
 
-                    <!-- 對話區域 - 桌面版使用原始彈性佈局，手機版使用固定高度 -->
-                    <div class="lg:col-span-1 flex flex-col gap-4 overflow-hidden flex-1 min-h-0 conversation-area">
+                    <!-- 對話區域 -->
+                    <div class="flex flex-col gap-4 overflow-hidden conversation-area">
                         <div id="log-container" class="flex-1 bg-black/30 backdrop-blur-sm rounded-xl p-4 space-y-4 overflow-y-auto custom-scrollbar border border-gray-700/50 min-h-0"></div>
                         <div id="action-container" class="flex-shrink-0 space-y-2"></div>
                     </div>
@@ -453,7 +535,7 @@
         async function askForRoute() {
             await appendLog('user', '嘿，AI 導航，我們現在在天使之巔國家公園附近，幫我們找一條簡單、適合小孩的步道，最好能看到瀑布，而且來回大概一小時。');
             const aiLogEntry = await appendLog('ai', '');
-            showThinking(aiLogEntry, '正在規畫最佳路線...');
+            showThinking(aiLogEntry, '正在規劃最佳路線...');
             await animateCarAlongPath(road1, 4000);
             aiLogEntry.querySelector('.typewriter-text').parentElement.style.paddingTop = ''; aiLogEntry.querySelector('.typewriter-text').parentElement.style.paddingBottom = '';
             const response = `<div class="space-y-3"><p>當然！為您找到一個絕佳的選擇：<strong class="text-blue-400">『月語瀑布小徑』</strong>。</p><div class="bg-blue-900/20 border border-blue-700/30 rounded-lg p-3 space-y-2 text-sm"><div><ion-icon name="trail-sign" class="text-blue-400"></ion-icon> <strong>長度：</strong>2 公里環狀步道</div><div><ion-icon name="star" class="text-yellow-400"></ion-icon> <strong>評分：</strong>4.9 顆星 (300+ 則評論)</div><div><ion-icon name="restaurant" class="text-green-400"></ion-icon> <strong>設施：</strong>公共洗手間、野餐區</div><div><ion-icon name="location" class="text-red-400"></ion-icon> <strong>入口：</strong>前方岔路左轉</div></div></div>`;
