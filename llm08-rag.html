@@ -888,16 +888,19 @@
 
         // Initialize the page
         function init() {
-            const indexingTarget = document.getElementById('indexing-target');
-            const targetRect = indexingTarget.getBoundingClientRect();
             const particleLifetime = 1000;
             const totalWaves = 4;
             const waveInterval = 500;
             const animationDuration = (totalWaves * waveInterval) + particleLifetime;
 
+            // 修正問題1: 確保 targetRect 在動畫執行時動態計算
             setTimeout(() => {
                 for (let wave = 0; wave < totalWaves; wave++) {
                     setTimeout(() => {
+                        // 動態計算目標位置，確保在小螢幕時也正確
+                        const indexingTarget = document.getElementById('indexing-target');
+                        const targetRect = indexingTarget.getBoundingClientRect();
+                        
                         for (let i = 0; i < 60; i++) {
                             createDataParticle(docA, targetRect, i * 20, 'up', particleLifetime);
                             createDataParticle(docB, targetRect, i * 20 + 10, 'down', particleLifetime);
@@ -1065,6 +1068,7 @@
             if (!contentBubble) return;
 
             setTimeout(() => {
+                // 修正問題1: 每次動畫執行時重新計算目標位置
                 const toRect = contentBubble.getBoundingClientRect();
 
                 const elements = Array.isArray(docElements) ? docElements : [docElements];
@@ -1300,8 +1304,23 @@
                     contentDiv.innerHTML = finalResponse;
                     scrollChat();
 
-                    // 直接停留在對話框，不切換到攻擊步驟顯示
+                    // 修正問題2: 攻擊成功後切換到第五步驟「收割成果」
+                    activateStep(5);
                     attackResult.classList.remove('hidden');
+                    
+                    // 小螢幕時先滾動到螢幕最底部顯示第五步，然後再滾動到攻擊成功結果
+                    if (window.innerWidth < 1024) {
+                        
+                        
+                        // 延遲後滾動到攻擊成功結果區域
+                        setTimeout(() => {
+                            attackResult.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }, 2500); // 延遲2.5秒讓用戶看到第五步
+                    }
+                    
                     currentStep = 3; // Final state
                 }, 3000);
             }
@@ -1315,11 +1334,11 @@
             // 滾動到對話框的函數
             function scrollToChat() {
                 if (isSmallScreen()) {
-                    const chatContainer = document.getElementById('chat-container');
-                    if (chatContainer) {
-                        chatContainer.scrollIntoView({
+                    const chatInput = document.getElementById('chat-input');
+                    if (chatInput) {
+                        chatInput.scrollIntoView({
                             behavior: 'smooth',
-                            block: 'start'
+                            block: 'center'
                         });
                     }
                 }
