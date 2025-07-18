@@ -557,7 +557,7 @@
             await typeWriter(aiLogEntry.querySelector('.typewriter-text'), response, 20);
             gameState = 'decision';
             setActions([
-                { text: '完全相信 AI，轉向岔路', icon: 'checkmark-circle', color: 'red', handler: takeDetour },
+                { text: '來都來了，相信 AI 轉向岔路', icon: 'checkmark-circle', color: 'red', handler: takeDetour },
                 { text: '謹慎起見，繼續走主路', icon: 'search', color: 'green', handler: stayOnMainRoad }
             ]);
             await sleep(50);
